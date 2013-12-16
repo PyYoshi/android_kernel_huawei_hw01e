@@ -930,7 +930,7 @@ static int zd1201_get_freq(struct net_device *dev,
     struct iw_request_info *info, struct iw_freq *freq, char *extra)
 {
 	struct zd1201 *zd = netdev_priv(dev);
-	short channel;
+	short channel = 0;
 	int err;
 
 	err = zd1201_getconfig16(zd, ZD1201_RID_CNFOWNCHANNEL, &channel);
@@ -1008,7 +1008,7 @@ static int zd1201_get_mode(struct net_device *dev,
     struct iw_request_info *info, __u32 *mode, char *extra)
 {
 	struct zd1201 *zd = netdev_priv(dev);
-	short porttype;
+	short porttype = 0;
 	int err;
 
 	err = zd1201_getconfig16(zd, ZD1201_RID_CNFPORTTYPE, &porttype);
@@ -1273,7 +1273,7 @@ static int zd1201_get_rate(struct net_device *dev,
     struct iw_request_info *info, struct iw_param *rrq, char *extra)
 {
 	struct zd1201 *zd = netdev_priv(dev);
-	short rate;
+	short rate = 0;
 	int err;
 
 	err = zd1201_getconfig16(zd, ZD1201_RID_CURRENTTXRATE, &rate);
@@ -1326,7 +1326,7 @@ static int zd1201_get_rts(struct net_device *dev, struct iw_request_info *info,
     struct iw_param *rts, char *extra)
 {
 	struct zd1201 *zd = netdev_priv(dev);
-	short rtst;
+	short rtst = 0;
 	int err;
 
 	err = zd1201_getconfig16(zd, ZD1201_RID_CNFRTSTHRESHOLD, &rtst);
@@ -1364,7 +1364,7 @@ static int zd1201_get_frag(struct net_device *dev, struct iw_request_info *info,
     struct iw_param *frag, char *extra)
 {
 	struct zd1201 *zd = netdev_priv(dev);
-	short fragt;
+	short fragt = 0;
 	int err;
 
 	err = zd1201_getconfig16(zd, ZD1201_RID_CNFFRAGTHRESHOLD, &fragt);
@@ -1483,7 +1483,8 @@ static int zd1201_set_power(struct net_device *dev,
     struct iw_request_info *info, struct iw_param *vwrq, char *extra)
 {
 	struct zd1201 *zd = netdev_priv(dev);
-	short enabled, duration, level;
+	short enabled, level;
+	short duration = 0;
 	int err;
 
 	enabled = vwrq->disabled ? 0 : 1;
@@ -1522,7 +1523,9 @@ static int zd1201_get_power(struct net_device *dev,
     struct iw_request_info *info, struct iw_param *vwrq, char *extra)
 {
 	struct zd1201 *zd = netdev_priv(dev);
-	short enabled, level, duration;
+	short enabled = 0;
+	short level = 0;
+	short duration = 0;
 	int err;
 
 	err = zd1201_getconfig16(zd, ZD1201_RID_CNFPMENABLED, &enabled);
@@ -1620,7 +1623,7 @@ static int zd1201_get_hostauth(struct net_device *dev,
     struct iw_request_info *info, struct iw_param *rrq, char *extra)
 {
 	struct zd1201 *zd = netdev_priv(dev);
-	short hostauth;
+	short hostauth = 0;
 	int err;
 
 	if (!zd->ap)
@@ -1670,7 +1673,7 @@ static int zd1201_get_maxassoc(struct net_device *dev,
     struct iw_request_info *info, struct iw_param *rrq, char *extra)
 {
 	struct zd1201 *zd = netdev_priv(dev);
-	short maxassoc;
+	short maxassoc = 0;
 	int err;
 
 	if (!zd->ap)

@@ -111,7 +111,7 @@ static int destroy_dentry_list(void)
 /* This function create debugfs for  a config key */
 static int generate_common_debugfs_line(struct dentry *root, const char* key)
 {
-	char* buf, *fullpath, *b = NULL;
+	char* buf, *fullpath, *b;
 	struct dentry *parent = root;
 	int ret = 0;
 
@@ -168,10 +168,10 @@ static int generate_common_debugfs_line(struct dentry *root, const char* key)
 	}
 
 fail:
-	if(buf)
+	/**if(buf)
 		kfree(buf);
 	if(fullpath)
-		kfree(fullpath);
+		kfree(fullpath);**/
 	return ret;
 }
 

@@ -351,7 +351,8 @@ static int ov5647_sunny_actuator_set_hwparam(void *data, u64 val)
 
 static int ov5647_sunny_actuator_get_hwparam(void *data, u64 *val)
 {
-	*val = ov5647_sunny_hw_params[1];
+	//*val = ov5647_sunny_hw_params[1];
+	*val = ov5647_sunny_hw_params[0];
 	return 0;
 }
 
