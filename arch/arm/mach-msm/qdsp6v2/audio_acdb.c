@@ -631,6 +631,7 @@ static int register_memory(void)
 	int			result;
 	unsigned long		paddr;
 	unsigned long		kvaddr;
+    void                *kvptr;
 	unsigned long		mem_len;
 
 	mutex_lock(&acdb_data.acdb_mutex);
@@ -638,6 +639,7 @@ static int register_memory(void)
 		msm_ion_client_create(UINT_MAX, "audio_acdb_client");
 	if (IS_ERR_OR_NULL(acdb_data.ion_client)) {
 		pr_err("%s: Could not register ION client!!!\n", __func__);
+        result = PTR_ERR(acdb_data.ion_client);
 		goto err;
 	}
 
@@ -645,6 +647,7 @@ static int register_memory(void)
 		atomic_read(&acdb_data.map_handle));
 	if (IS_ERR_OR_NULL(acdb_data.ion_handle)) {
 		pr_err("%s: Could not import map handle!!!\n", __func__);
+        result = PTR_ERR(acdb_data.ion_handle);
 		goto err_ion_client;
 	}
 
@@ -655,12 +658,13 @@ static int register_memory(void)
 		goto err_ion_handle;
 	}
 
-	kvaddr = (unsigned long)ion_map_kernel(acdb_data.ion_client,
-		acdb_data.ion_handle, 0);
-	if (IS_ERR_OR_NULL(&kvaddr)) {
-		pr_err("%s: Could not get kernel virt addr!!!\n", __func__);
-		goto err_ion_handle;
-	}
+	kvptr = ion_map_kernel(acdb_data.ion_client, acdb_data.ion_handle, 0);
+    if (IS_ERR_OR_NULL(kvptr)) {
+            pr_err("%s: Could not get kernel virt addr!!!\n", __func__);
+            result = PTR_ERR(kvptr);
+            goto err_ion_handle;
+    }
+    kvaddr = (unsigned long)kvptr;
 	mutex_unlock(&acdb_data.acdb_mutex);
 
 	atomic64_set(&acdb_data.paddr, paddr);
@@ -762,7 +766,7 @@ static long acdb_ioctl(struct file *f,
 		goto done;
 	}
 
-	if (size <= 0) {
+	if ((size <= 0) || (size > sizeof(data))) {
 		pr_err("%s: Invalid size sent to driver: %d\n",
 			__func__, size);
 		result = -EFAULT;

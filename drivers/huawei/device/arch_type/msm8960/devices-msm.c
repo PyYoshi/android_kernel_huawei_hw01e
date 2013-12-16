@@ -403,7 +403,7 @@ static struct attribute_group properties_attr_group = {
 static void __init virtualkeys_init(void)
 {
     struct kobject *properties_kobj;
-    int ret;
+    int ret = 0;
 /*Add TP self adapt*/
     char version[MAX_TP_VERSION_LEN];
     char keyorder[MAX_TK_KEYORDER_LEN];

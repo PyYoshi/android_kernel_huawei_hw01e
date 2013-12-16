@@ -393,7 +393,7 @@ static enum led_brightness pm8xxx_led_get(struct led_classdev *led_cdev)
 static int __devinit get_init_value(struct pm8xxx_led_data *led, u8 *val)
 {
 	int rc, offset;
-	u16 addr;
+	u16 addr = 0;
 
 	switch (led->id) {
 	case PM8XXX_ID_LED_KB_LIGHT:
