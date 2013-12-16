@@ -141,7 +141,7 @@ void ieee80211_assign_tid_tx(struct sta_info *sta, int tid,
 {
 	lockdep_assert_held(&sta->ampdu_mlme.mtx);
 	lockdep_assert_held(&sta->lock);
-	rcu_assign_pointer(sta->ampdu_mlme.tid_tx[tid], tid_tx);
+	RCU_INIT_POINTER(sta->ampdu_mlme.tid_tx[tid], tid_tx);
 }
 
 int ___ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,

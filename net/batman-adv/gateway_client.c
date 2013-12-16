@@ -87,7 +87,7 @@ static void gw_select(struct bat_priv *bat_priv, struct gw_node *new_gw_node)
 		new_gw_node = NULL;
 
 	curr_gw_node = bat_priv->curr_gw;
-	rcu_assign_pointer(bat_priv->curr_gw, new_gw_node);
+	RCU_INIT_POINTER(bat_priv->curr_gw, new_gw_node);
 
 	if (curr_gw_node)
 		gw_node_free_ref(curr_gw_node);

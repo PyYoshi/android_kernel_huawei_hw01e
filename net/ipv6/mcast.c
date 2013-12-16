@@ -193,7 +193,7 @@ int ipv6_sock_mc_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
 
 	spin_lock(&ipv6_sk_mc_lock);
 	mc_lst->next = np->ipv6_mc_list;
-	rcu_assign_pointer(np->ipv6_mc_list, mc_lst);
+	RCU_INIT_POINTER(np->ipv6_mc_list, mc_lst);
 	spin_unlock(&ipv6_sk_mc_lock);
 
 	rcu_read_unlock();

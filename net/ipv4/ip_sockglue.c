@@ -274,7 +274,7 @@ int ip_ra_control(struct sock *sk, unsigned char on,
 			}
 			/* dont let ip_call_ra_chain() use sk again */
 			ra->sk = NULL;
-			rcu_assign_pointer(*rap, ra->next);
+			RCU_INIT_POINTER(*rap, ra->next);
 			spin_unlock_bh(&ip_ra_lock);
 
 			if (ra->destructor)
@@ -297,7 +297,7 @@ int ip_ra_control(struct sock *sk, unsigned char on,
 	new_ra->destructor = destructor;
 
 	new_ra->next = ra;
-	rcu_assign_pointer(*rap, new_ra);
+	RCU_INIT_POINTER(*rap, new_ra);
 	sock_hold(sk);
 	spin_unlock_bh(&ip_ra_lock);
 
@@ -529,7 +529,7 @@ static int do_ip_setsockopt(struct sock *sk, int level,
 			}
 #endif
 		}
-		rcu_assign_pointer(inet->inet_opt, opt);
+		RCU_INIT_POINTER(inet->inet_opt, opt);
 		if (old)
 			call_rcu(&old->rcu, opt_kfree_rcu);
 		break;

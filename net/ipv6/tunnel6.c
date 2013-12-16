@@ -54,7 +54,7 @@ int xfrm6_tunnel_register(struct xfrm6_tunnel *handler, unsigned short family)
 	}
 
 	handler->next = *pprev;
-	rcu_assign_pointer(*pprev, handler);
+	RCU_INIT_POINTER(*pprev, handler);
 
 	ret = 0;
 

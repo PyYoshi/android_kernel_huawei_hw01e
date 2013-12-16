@@ -346,8 +346,8 @@ static void ipgre_tunnel_link(struct ipgre_net *ign, struct ip_tunnel *t)
 {
 	struct ip_tunnel __rcu **tp = ipgre_bucket(ign, t);
 
-	rcu_assign_pointer(t->next, rtnl_dereference(*tp));
-	rcu_assign_pointer(*tp, t);
+	RCU_INIT_POINTER(t->next, rtnl_dereference(*tp));
+	RCU_INIT_POINTER(*tp, t);
 }
 
 static void ipgre_tunnel_unlink(struct ipgre_net *ign, struct ip_tunnel *t)
@@ -359,7 +359,7 @@ static void ipgre_tunnel_unlink(struct ipgre_net *ign, struct ip_tunnel *t)
 	     (iter = rtnl_dereference(*tp)) != NULL;
 	     tp = &iter->next) {
 		if (t == iter) {
-			rcu_assign_pointer(*tp, t->next);
+			RCU_INIT_POINTER(*tp, t->next);
 			break;
 		}
 	}
@@ -1357,7 +1357,7 @@ static int __net_init ipgre_init_net(struct net *net)
 	if ((err = register_netdev(ign->fb_tunnel_dev)))
 		goto err_reg_dev;
 
-	rcu_assign_pointer(ign->tunnels_wc[0],
+	RCU_INIT_POINTER(ign->tunnels_wc[0],
 			   netdev_priv(ign->fb_tunnel_dev));
 	return 0;
 

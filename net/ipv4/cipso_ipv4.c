@@ -1936,7 +1936,7 @@ int cipso_v4_sock_setattr(struct sock *sk,
 		sk_conn->icsk_ext_hdr_len += opt->opt.optlen;
 		sk_conn->icsk_sync_mss(sk, sk_conn->icsk_pmtu_cookie);
 	}
-	rcu_assign_pointer(sk_inet->inet_opt, opt);
+	RCU_INIT_POINTER(sk_inet->inet_opt, opt);
 	if (old)
 		call_rcu(&old->rcu, opt_kfree_rcu);
 

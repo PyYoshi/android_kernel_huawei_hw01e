@@ -1437,7 +1437,7 @@ struct sock *tcp_v4_syn_recv_sock(struct sock *sk, struct sk_buff *skb,
 	newinet->inet_rcv_saddr = ireq->loc_addr;
 	newinet->inet_saddr	      = ireq->loc_addr;
 	inet_opt	      = ireq->opt;
-	rcu_assign_pointer(newinet->inet_opt, inet_opt);
+	RCU_INIT_POINTER(newinet->inet_opt, inet_opt);
 	ireq->opt	      = NULL;
 	newinet->mc_index     = inet_iif(skb);
 	newinet->mc_ttl	      = ip_hdr(skb)->ttl;

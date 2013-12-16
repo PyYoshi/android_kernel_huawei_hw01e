@@ -3065,8 +3065,8 @@ int netdev_rx_handler_register(struct net_device *dev,
 	if (dev->rx_handler)
 		return -EBUSY;
 
-	rcu_assign_pointer(dev->rx_handler_data, rx_handler_data);
-	rcu_assign_pointer(dev->rx_handler, rx_handler);
+	RCU_INIT_POINTER(dev->rx_handler_data, rx_handler_data);
+	RCU_INIT_POINTER(dev->rx_handler, rx_handler);
 
 	return 0;
 }
@@ -3084,8 +3084,8 @@ void netdev_rx_handler_unregister(struct net_device *dev)
 {
 
 	ASSERT_RTNL();
-	rcu_assign_pointer(dev->rx_handler, NULL);
-	rcu_assign_pointer(dev->rx_handler_data, NULL);
+	RCU_INIT_POINTER(dev->rx_handler, NULL);
+	RCU_INIT_POINTER(dev->rx_handler_data, NULL);
 }
 EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
 
@@ -5794,7 +5794,7 @@ struct netdev_queue *dev_ingress_queue_create(struct net_device *dev)
 	netdev_init_one_queue(dev, queue, NULL);
 	queue->qdisc = &noop_qdisc;
 	queue->qdisc_sleeping = &noop_qdisc;
-	rcu_assign_pointer(dev->ingress_queue, queue);
+	RCU_INIT_POINTER(dev->ingress_queue, queue);
 #endif
 	return queue;
 }

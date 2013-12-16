@@ -295,7 +295,7 @@ static int __init init_cgroup_cls(void)
 		goto out;
 
 #ifndef CONFIG_NET_CLS_CGROUP
-	/* We can't use rcu_assign_pointer because this is an int. */
+	/* We can't use RCU_INIT_POINTER because this is an int. */
 	smp_wmb();
 	net_cls_subsys_id = net_cls_subsys.subsys_id;
 #endif

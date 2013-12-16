@@ -268,7 +268,7 @@ static void br_multicast_del_pg(struct net_bridge *br,
 		if (p != pg)
 			continue;
 
-		rcu_assign_pointer(*pp, p->next);
+		RCU_INIT_POINTER(*pp, p->next);
 		hlist_del_init(&p->mglist);
 		del_timer(&p->timer);
 		del_timer(&p->query_timer);
@@ -341,7 +341,7 @@ static int br_mdb_rehash(struct net_bridge_mdb_htable __rcu **mdbp, int max,
 	call_rcu_bh(&mdb->rcu, br_mdb_free);
 
 out:
-	rcu_assign_pointer(*mdbp, mdb);
+	RCU_INIT_POINTER(*mdbp, mdb);
 
 	return 0;
 }
@@ -746,7 +746,7 @@ static int br_multicast_add_group(struct net_bridge *br,
 	setup_timer(&p->query_timer, br_multicast_port_group_query_expired,
 		    (unsigned long)p);
 
-	rcu_assign_pointer(*pp, p);
+	RCU_INIT_POINTER(*pp, p);
 
 found:
 	mod_timer(&p->timer, now + br->multicast_membership_interval);

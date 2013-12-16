@@ -151,7 +151,7 @@ static int neigh_forced_gc(struct neigh_table *tbl)
 			write_lock(&n->lock);
 			if (atomic_read(&n->refcnt) == 1 &&
 			    !(n->nud_state & NUD_PERMANENT)) {
-				rcu_assign_pointer(*np,
+				RCU_INIT_POINTER(*np,
 					rcu_dereference_protected(n->next,
 						  lockdep_is_held(&tbl->lock)));
 				n->dead = 1;
@@ -220,7 +220,7 @@ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev)
 				np = &n->next;
 				continue;
 			}
-			rcu_assign_pointer(*np,
+			RCU_INIT_POINTER(*np,
 				   rcu_dereference_protected(n->next,
 						lockdep_is_held(&tbl->lock)));
 			write_lock(&n->lock);
@@ -381,15 +381,15 @@ static struct neigh_hash_table *neigh_hash_grow(struct neigh_table *tbl,
 			next = rcu_dereference_protected(n->next,
 						lockdep_is_held(&tbl->lock));
 
-			rcu_assign_pointer(n->next,
+			RCU_INIT_POINTER(n->next,
 					   rcu_dereference_protected(
 						new_nht->hash_buckets[hash],
 						lockdep_is_held(&tbl->lock)));
-			rcu_assign_pointer(new_nht->hash_buckets[hash], n);
+			RCU_INIT_POINTER(new_nht->hash_buckets[hash], n);
 		}
 	}
 
-	rcu_assign_pointer(tbl->nht, new_nht);
+	RCU_INIT_POINTER(tbl->nht, new_nht);
 	call_rcu(&old_nht->rcu, neigh_hash_free_rcu);
 	return new_nht;
 }
@@ -516,10 +516,10 @@ struct neighbour *neigh_create(struct neigh_table *tbl, const void *pkey,
 
 	n->dead = 0;
 	neigh_hold(n);
-	rcu_assign_pointer(n->next,
+	RCU_INIT_POINTER(n->next,
 			   rcu_dereference_protected(nht->hash_buckets[hash_val],
 						     lockdep_is_held(&tbl->lock)));
-	rcu_assign_pointer(nht->hash_buckets[hash_val], n);
+	RCU_INIT_POINTER(nht->hash_buckets[hash_val], n);
 	write_unlock_bh(&tbl->lock);
 	NEIGH_PRINTK2("neigh %p is created.\n", n);
 	rc = n;
@@ -2302,7 +2302,7 @@ void __neigh_for_each_release(struct neigh_table *tbl,
 			write_lock(&n->lock);
 			release = cb(n);
 			if (release) {
-				rcu_assign_pointer(*np,
+				RCU_INIT_POINTER(*np,
 					rcu_dereference_protected(n->next,
 						lockdep_is_held(&tbl->lock)));
 				n->dead = 1;

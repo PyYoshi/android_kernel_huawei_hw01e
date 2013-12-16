@@ -67,7 +67,7 @@ static int rps_sock_flow_sysctl(ctl_table *table, int write,
 			sock_table = NULL;
 
 		if (sock_table != orig_sock_table) {
-			rcu_assign_pointer(rps_sock_flow_table, sock_table);
+			RCU_INIT_POINTER(rps_sock_flow_table, sock_table);
 			synchronize_rcu();
 			vfree(orig_sock_table);
 		}

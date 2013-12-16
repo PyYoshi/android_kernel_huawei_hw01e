@@ -243,7 +243,7 @@ static void softif_neigh_vid_select(struct bat_priv *bat_priv,
 		new_neigh = NULL;
 
 	curr_neigh = softif_neigh_vid->softif_neigh;
-	rcu_assign_pointer(softif_neigh_vid->softif_neigh, new_neigh);
+	RCU_INIT_POINTER(softif_neigh_vid->softif_neigh, new_neigh);
 
 	if ((curr_neigh) && (!new_neigh))
 		bat_dbg(DBG_ROUTES, bat_priv,

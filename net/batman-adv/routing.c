@@ -125,7 +125,7 @@ static void update_route(struct bat_priv *bat_priv,
 		neigh_node = NULL;
 
 	spin_lock_bh(&orig_node->neigh_list_lock);
-	rcu_assign_pointer(orig_node->router, neigh_node);
+	RCU_INIT_POINTER(orig_node->router, neigh_node);
 	spin_unlock_bh(&orig_node->neigh_list_lock);
 
 	/* decrease refcount of previous best neighbor */

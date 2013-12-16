@@ -139,7 +139,7 @@ static void primary_if_select(struct bat_priv *bat_priv,
 		new_hard_iface = NULL;
 
 	curr_hard_iface = bat_priv->primary_if;
-	rcu_assign_pointer(bat_priv->primary_if, new_hard_iface);
+	RCU_INIT_POINTER(bat_priv->primary_if, new_hard_iface);
 
 	if (curr_hard_iface)
 		hardif_free_ref(curr_hard_iface);

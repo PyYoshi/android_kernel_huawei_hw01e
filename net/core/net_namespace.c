@@ -61,7 +61,7 @@ static int net_assign_generic(struct net *net, int id, void *data)
 	ng->len = id;
 	memcpy(&ng->ptr, &old_ng->ptr, old_ng->len * sizeof(void*));
 
-	rcu_assign_pointer(net->gen, ng);
+	RCU_INIT_POINTER(net->gen, ng);
 	kfree_rcu(old_ng, rcu);
 assign:
 	ng->ptr[id - 1] = data;
@@ -189,7 +189,7 @@ static struct net *net_alloc(void)
 	if (!net)
 		goto out_free;
 
-	rcu_assign_pointer(net->gen, ng);
+	RCU_INIT_POINTER(net->gen, ng);
 out:
 	return net;
 
@@ -385,7 +385,7 @@ static int __init net_ns_init(void)
 	if (!ng)
 		panic("Could not allocate generic netns");
 
-	rcu_assign_pointer(init_net.gen, ng);
+	RCU_INIT_POINTER(init_net.gen, ng);
 
 	mutex_lock(&net_mutex);
 	if (setup_net(&init_net))

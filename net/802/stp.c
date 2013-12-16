@@ -74,9 +74,9 @@ int stp_proto_register(const struct stp_proto *proto)
 		}
 	}
 	if (is_zero_ether_addr(proto->group_address))
-		rcu_assign_pointer(stp_proto, proto);
+		RCU_INIT_POINTER(stp_proto, proto);
 	else
-		rcu_assign_pointer(garp_protos[proto->group_address[5] -
+		RCU_INIT_POINTER(garp_protos[proto->group_address[5] -
 					       GARP_ADDR_MIN], proto);
 out:
 	mutex_unlock(&stp_proto_mutex);
@@ -88,9 +88,9 @@ void stp_proto_unregister(const struct stp_proto *proto)
 {
 	mutex_lock(&stp_proto_mutex);
 	if (is_zero_ether_addr(proto->group_address))
-		rcu_assign_pointer(stp_proto, NULL);
+		RCU_INIT_POINTER(stp_proto, NULL);
 	else
-		rcu_assign_pointer(garp_protos[proto->group_address[5] -
+		RCU_INIT_POINTER(garp_protos[proto->group_address[5] -
 					       GARP_ADDR_MIN], NULL);
 	synchronize_rcu();
 

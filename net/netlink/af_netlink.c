@@ -1536,7 +1536,7 @@ netlink_kernel_create(struct net *net, int unit, unsigned int groups,
 	netlink_table_grab();
 	if (!nl_table[unit].registered) {
 		nl_table[unit].groups = groups;
-		rcu_assign_pointer(nl_table[unit].listeners, listeners);
+		RCU_INIT_POINTER(nl_table[unit].listeners, listeners);
 		nl_table[unit].cb_mutex = cb_mutex;
 		nl_table[unit].module = module;
 		nl_table[unit].registered = 1;
@@ -1580,7 +1580,7 @@ int __netlink_change_ngroups(struct sock *sk, unsigned int groups)
 			return -ENOMEM;
 		old = rcu_dereference_raw(tbl->listeners);
 		memcpy(new->masks, old->masks, NLGRPSZ(tbl->groups));
-		rcu_assign_pointer(tbl->listeners, new);
+		RCU_INIT_POINTER(tbl->listeners, new);
 
 		kfree_rcu(old, rcu);
 	}
@@ -2093,7 +2093,7 @@ static void __init netlink_add_usersock_entry(void)
 	netlink_table_grab();
 
 	nl_table[NETLINK_USERSOCK].groups = groups;
-	rcu_assign_pointer(nl_table[NETLINK_USERSOCK].listeners, listeners);
+	RCU_INIT_POINTER(nl_table[NETLINK_USERSOCK].listeners, listeners);
 	nl_table[NETLINK_USERSOCK].module = THIS_MODULE;
 	nl_table[NETLINK_USERSOCK].registered = 1;
 
