@@ -629,7 +629,7 @@ int sk_attach_filter(struct sock_fprog *fprog, struct sock *sk)
 
 	old_fp = rcu_dereference_protected(sk->sk_filter,
 					   sock_owned_by_user(sk));
-	RCU_INIT_POINTER(sk->sk_filter, fp);
+	rcu_assign_pointer(sk->sk_filter, fp);
 
 	if (old_fp)
 		sk_filter_uncharge(sk, old_fp);
@@ -645,7 +645,7 @@ int sk_detach_filter(struct sock *sk)
 	filter = rcu_dereference_protected(sk->sk_filter,
 					   sock_owned_by_user(sk));
 	if (filter) {
-		RCU_INIT_POINTER(sk->sk_filter, NULL);
+		rcu_assign_pointer(sk->sk_filter, NULL);
 		sk_filter_uncharge(sk, filter);
 		ret = 0;
 	}

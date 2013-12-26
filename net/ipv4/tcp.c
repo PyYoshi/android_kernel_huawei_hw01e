@@ -3189,9 +3189,9 @@ int tcp_cookie_generator(u32 *bakery)
 			memcpy(&tcp_secret_secondary->secrets[0],
 			       bakery, COOKIE_WORKSPACE_WORDS);
 
-			RCU_INIT_POINTER(tcp_secret_generating,
+			rcu_assign_pointer(tcp_secret_generating,
 					   tcp_secret_secondary);
-			RCU_INIT_POINTER(tcp_secret_retiring,
+			rcu_assign_pointer(tcp_secret_retiring,
 					   tcp_secret_primary);
 			/*
 			 * Neither call_rcu() nor synchronize_rcu() needed.

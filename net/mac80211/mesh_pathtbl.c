@@ -189,7 +189,7 @@ void mesh_path_assign_nexthop(struct mesh_path *mpath, struct sta_info *sta)
 	struct sk_buff_head tmpq;
 	unsigned long flags;
 
-	RCU_INIT_POINTER(mpath->next_hop, sta);
+	rcu_assign_pointer(mpath->next_hop, sta);
 
 	__skb_queue_head_init(&tmpq);
 
@@ -417,7 +417,7 @@ void mesh_mpath_table_grow(void)
 		__mesh_table_free(newtbl);
 		goto out;
 	}
-	RCU_INIT_POINTER(mesh_paths, newtbl);
+	rcu_assign_pointer(mesh_paths, newtbl);
 
 	call_rcu(&oldtbl->rcu_head, mesh_table_free_rcu);
 
@@ -438,7 +438,7 @@ void mesh_mpp_table_grow(void)
 		__mesh_table_free(newtbl);
 		goto out;
 	}
-	RCU_INIT_POINTER(mpp_paths, newtbl);
+	rcu_assign_pointer(mpp_paths, newtbl);
 	call_rcu(&oldtbl->rcu_head, mesh_table_free_rcu);
 
  out:

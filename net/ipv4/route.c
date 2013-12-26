@@ -773,8 +773,8 @@ static void rt_do_flush(struct net *net, int process_context)
 
 			if (!net ||
 			    net_eq(dev_net(rth->dst.dev), net)) {
-				RCU_INIT_POINTER(*pprev, next);
-				RCU_INIT_POINTER(rth->dst.rt_next, list);
+				rcu_assign_pointer(*pprev, next);
+				rcu_assign_pointer(rth->dst.rt_next, list);
 				list = rth;
 			} else {
 				pprev = &rth->dst.rt_next;
@@ -1074,13 +1074,13 @@ restart:
 			 * must be visible to another weakly ordered CPU before
 			 * the insertion at the start of the hash chain.
 			 */
-			RCU_INIT_POINTER(rth->dst.rt_next,
+			rcu_assign_pointer(rth->dst.rt_next,
 					   rt_hash_table[hash].chain);
 			/*
 			 * Since lookup is lockfree, the update writes
 			 * must be ordered for consistency on SMP.
 			 */
-			RCU_INIT_POINTER(rt_hash_table[hash].chain, rth);
+			rcu_assign_pointer(rt_hash_table[hash].chain, rth);
 
 			dst_use(&rth->dst, now);
 			spin_unlock_bh(rt_hash_lock_addr(hash));
@@ -1177,7 +1177,7 @@ restart:
 	 * previous writes to rt are committed to memory
 	 * before making rt visible to other CPUS.
 	 */
-	RCU_INIT_POINTER(rt_hash_table[hash].chain, rt);
+	rcu_assign_pointer(rt_hash_table[hash].chain, rt);
 
 	spin_unlock_bh(rt_hash_lock_addr(hash));
 

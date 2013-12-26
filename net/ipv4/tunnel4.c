@@ -44,7 +44,7 @@ int xfrm4_tunnel_register(struct xfrm_tunnel *handler, unsigned short family)
 	}
 
 	handler->next = *pprev;
-	RCU_INIT_POINTER(*pprev, handler);
+	rcu_assign_pointer(*pprev, handler);
 
 	ret = 0;
 

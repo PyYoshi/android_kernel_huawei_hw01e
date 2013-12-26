@@ -160,7 +160,7 @@ dns_resolver_instantiate(struct key *key, const void *_data, size_t datalen)
 	upayload->datalen = result_len;
 	memcpy(upayload->data, data, result_len);
 	upayload->data[result_len] = '\0';
-	RCU_INIT_POINTER(key->payload.data, upayload);
+	rcu_assign_pointer(key->payload.data, upayload);
 
 	kleave(" = 0");
 	return 0;

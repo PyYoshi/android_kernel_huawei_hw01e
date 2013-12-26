@@ -189,9 +189,9 @@ static void __ieee80211_set_default_key(struct ieee80211_sub_if_data *sdata,
 		key = key_mtx_dereference(sdata->local, sdata->keys[idx]);
 
 	if (uni)
-		RCU_INIT_POINTER(sdata->default_unicast_key, key);
+		rcu_assign_pointer(sdata->default_unicast_key, key);
 	if (multi)
-		RCU_INIT_POINTER(sdata->default_multicast_key, key);
+		rcu_assign_pointer(sdata->default_multicast_key, key);
 
 	ieee80211_debugfs_key_update_default(sdata);
 }
@@ -215,7 +215,7 @@ __ieee80211_set_default_mgmt_key(struct ieee80211_sub_if_data *sdata, int idx)
 	    idx < NUM_DEFAULT_KEYS + NUM_DEFAULT_MGMT_KEYS)
 		key = key_mtx_dereference(sdata->local, sdata->keys[idx]);
 
-	RCU_INIT_POINTER(sdata->default_mgmt_key, key);
+	rcu_assign_pointer(sdata->default_mgmt_key, key);
 
 	ieee80211_debugfs_key_update_default(sdata);
 }
@@ -242,13 +242,13 @@ static void __ieee80211_key_replace(struct ieee80211_sub_if_data *sdata,
 		list_add(&new->list, &sdata->key_list);
 
 	if (sta && pairwise) {
-		RCU_INIT_POINTER(sta->ptk, new);
+		rcu_assign_pointer(sta->ptk, new);
 	} else if (sta) {
 		if (old)
 			idx = old->conf.keyidx;
 		else
 			idx = new->conf.keyidx;
-		RCU_INIT_POINTER(sta->gtk[idx], new);
+		rcu_assign_pointer(sta->gtk[idx], new);
 	} else {
 		WARN_ON(new && old && new->conf.keyidx != old->conf.keyidx);
 
@@ -274,7 +274,7 @@ static void __ieee80211_key_replace(struct ieee80211_sub_if_data *sdata,
 		if (defmgmtkey && !new)
 			__ieee80211_set_default_mgmt_key(sdata, -1);
 
-		RCU_INIT_POINTER(sdata->keys[idx], new);
+		rcu_assign_pointer(sdata->keys[idx], new);
 		if (defunikey && new)
 			__ieee80211_set_default_key(sdata, new->conf.keyidx,
 						    true, false);

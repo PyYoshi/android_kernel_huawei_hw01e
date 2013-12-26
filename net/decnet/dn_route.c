@@ -306,9 +306,9 @@ static int dn_insert_route(struct dn_route *rt, unsigned hash, struct dn_route *
 		if (compare_keys(&rth->fld, &rt->fld)) {
 			/* Put it first */
 			*rthp = rth->dst.dn_next;
-			RCU_INIT_POINTER(rth->dst.dn_next,
+			rcu_assign_pointer(rth->dst.dn_next,
 					   dn_rt_hash_table[hash].chain);
-			RCU_INIT_POINTER(dn_rt_hash_table[hash].chain, rth);
+			rcu_assign_pointer(dn_rt_hash_table[hash].chain, rth);
 
 			dst_use(&rth->dst, now);
 			spin_unlock_bh(&dn_rt_hash_table[hash].lock);
@@ -320,8 +320,8 @@ static int dn_insert_route(struct dn_route *rt, unsigned hash, struct dn_route *
 		rthp = &rth->dst.dn_next;
 	}
 
-	RCU_INIT_POINTER(rt->dst.dn_next, dn_rt_hash_table[hash].chain);
-	RCU_INIT_POINTER(dn_rt_hash_table[hash].chain, rt);
+	rcu_assign_pointer(rt->dst.dn_next, dn_rt_hash_table[hash].chain);
+	rcu_assign_pointer(dn_rt_hash_table[hash].chain, rt);
 
 	dst_use(&rt->dst, now);
 	spin_unlock_bh(&dn_rt_hash_table[hash].lock);

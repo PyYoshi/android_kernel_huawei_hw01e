@@ -386,7 +386,7 @@ static int fib_nl_newrule(struct sk_buff *skb, struct nlmsghdr* nlh, void *arg)
 			if (r->action == FR_ACT_GOTO &&
 			    r->target == rule->pref &&
 			    rtnl_dereference(r->ctarget) == NULL) {
-				RCU_INIT_POINTER(r->ctarget, rule);
+				rcu_assign_pointer(r->ctarget, rule);
 				if (--ops->unresolved_rules == 0)
 					break;
 			}
@@ -487,7 +487,7 @@ static int fib_nl_delrule(struct sk_buff *skb, struct nlmsghdr* nlh, void *arg)
 		if (ops->nr_goto_rules > 0) {
 			list_for_each_entry(tmp, &ops->rules_list, list) {
 				if (rtnl_dereference(tmp->ctarget) == rule) {
-					RCU_INIT_POINTER(tmp->ctarget, NULL);
+					rcu_assign_pointer(tmp->ctarget, NULL);
 					ops->unresolved_rules++;
 				}
 			}

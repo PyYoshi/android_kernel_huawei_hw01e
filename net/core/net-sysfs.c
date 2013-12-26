@@ -604,7 +604,7 @@ static ssize_t store_rps_map(struct netdev_rx_queue *queue,
 	spin_lock(&rps_map_lock);
 	old_map = rcu_dereference_protected(queue->rps_map,
 					    lockdep_is_held(&rps_map_lock));
-	RCU_INIT_POINTER(queue->rps_map, map);
+	rcu_assign_pointer(queue->rps_map, map);
 	spin_unlock(&rps_map_lock);
 
 	if (old_map)
@@ -684,7 +684,7 @@ static ssize_t store_rps_dev_flow_table_cnt(struct netdev_rx_queue *queue,
 	spin_lock(&rps_dev_flow_lock);
 	old_table = rcu_dereference_protected(queue->rps_flow_table,
 					      lockdep_is_held(&rps_dev_flow_lock));
-	RCU_INIT_POINTER(queue->rps_flow_table, table);
+	rcu_assign_pointer(queue->rps_flow_table, table);
 	spin_unlock(&rps_dev_flow_lock);
 
 	if (old_table)
@@ -989,10 +989,10 @@ static ssize_t store_xps_map(struct netdev_queue *queue,
 	}
 
 	if (nonempty)
-		RCU_INIT_POINTER(dev->xps_maps, new_dev_maps);
+		rcu_assign_pointer(dev->xps_maps, new_dev_maps);
 	else {
 		kfree(new_dev_maps);
-		RCU_INIT_POINTER(dev->xps_maps, NULL);
+		rcu_assign_pointer(dev->xps_maps, NULL);
 	}
 
 	if (dev_maps)

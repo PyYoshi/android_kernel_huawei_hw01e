@@ -358,7 +358,7 @@ do {								\
 	n->avl_left = peer_avl_empty_rcu;			\
 	n->avl_right = peer_avl_empty_rcu;			\
 	/* lockless readers can catch us now */			\
-	RCU_INIT_POINTER(**--stackptr, n);			\
+	rcu_assign_pointer(**--stackptr, n);			\
 	peer_avl_rebalance(stack, stackptr, base);		\
 } while (0)
 

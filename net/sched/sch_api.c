@@ -840,7 +840,7 @@ qdisc_create(struct net_device *dev, struct netdev_queue *dev_queue,
 				err = PTR_ERR(stab);
 				goto err_out4;
 			}
-			RCU_INIT_POINTER(sch->stab, stab);
+			rcu_assign_pointer(sch->stab, stab);
 		}
 		if (tca[TCA_RATE]) {
 			spinlock_t *root_lock;
@@ -906,7 +906,7 @@ static int qdisc_change(struct Qdisc *sch, struct nlattr **tca)
 	}
 
 	ostab = rtnl_dereference(sch->stab);
-	RCU_INIT_POINTER(sch->stab, stab);
+	rcu_assign_pointer(sch->stab, stab);
 	qdisc_put_stab(ostab);
 
 	if (tca[TCA_RATE]) {
