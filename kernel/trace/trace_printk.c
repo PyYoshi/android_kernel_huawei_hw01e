@@ -59,7 +59,6 @@ void hold_module_trace_bprintk_format(const char **start, const char **end)
 			continue;
 		}
 
-        fmt = NULL;
 		tb_fmt = kmalloc(sizeof(*tb_fmt), GFP_KERNEL);
 		if (tb_fmt)
 			fmt = kmalloc(strlen(*iter) + 1, GFP_KERNEL);

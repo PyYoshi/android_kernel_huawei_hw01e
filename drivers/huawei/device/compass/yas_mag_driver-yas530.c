@@ -1091,7 +1091,7 @@ static int
 yas_cdrv_init(const int8_t *transform, struct yas_machdep_func *func)
 {
 	int interval, i;
-	uint8_t id = 0;
+	uint8_t id;
 
 	if (transform == NULL || func == NULL)
 		return YAS_ERROR_ARG;
@@ -2256,7 +2256,7 @@ yas_get_enable_nolock(struct yas_driver *d)
 static int
 yas_set_enable_nolock(struct yas_driver *d, int active)
 {
-	int rt = 0;
+	int rt;
 
 	if (!d->initialized)
 		return YAS_ERROR_NOT_INITIALIZED;

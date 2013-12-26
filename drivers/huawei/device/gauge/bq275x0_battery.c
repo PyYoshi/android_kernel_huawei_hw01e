@@ -95,9 +95,9 @@
 
 #define BSP_UPGRADE_FIRMWARE_BQFS_CMD       "upgradebqfs"
 #define BSP_UPGRADE_FIRMWARE_DFFS_CMD       "upgradedffs"
-
+/*库仑计的完整的firmware，包含可执行镜像及数据*/
 #define BSP_UPGRADE_FIRMWARE_BQFS_NAME      "/system/etc/coulometer/bq27510_pro.bqfs"
-
+/*库仑计的的数据信息*/
 #define BSP_UPGRADE_FIRMWARE_DFFS_NAME      "/system/etc/coulometer/bq27510_pro.dffs"
 
 #define BSP_ROM_MODE_I2C_ADDR               0x0B
@@ -163,7 +163,7 @@ struct i2c_client* g_battery_measure_by_bq275x0_i2c_client = NULL;
 
 
 static struct i2c_driver bq275x0_battery_driver;
-
+/*在固件下载器件不允许Bq275x0其他类型的I2C操作*/
 static unsigned int gBq275x0DownloadFirmwareFlag = BSP_NORMAL_MODE;
 
 
@@ -272,7 +272,7 @@ static int bq275x0_i2c_word_write(struct i2c_client *client, u8 reg, u16 value)
 
 static int bq275x0_i2c_bytes_write(struct i2c_client *client, u8 reg, u8 *pBuf, u16 len)
 {
-	int i2c_ret, i,j = 0;
+	int i2c_ret, i,j;
     u8 *p;
 
     p = pBuf;
@@ -323,7 +323,7 @@ static int bq275x0_i2c_bytes_read(struct i2c_client *client, u8 reg, u8 *pBuf, u
 
 static int bq275x0_i2c_bytes_read_and_compare(struct i2c_client *client, u8 reg, u8 *pSrcBuf, u8 *pDstBuf, u16 len)
 {
-    int i2c_ret = 0;
+    int i2c_ret;
 
     i2c_ret = bq275x0_i2c_bytes_read(client, reg, pSrcBuf, len);
     if(i2c_ret < 0)
@@ -1041,6 +1041,7 @@ bq275x0_firmware_program_begin:
         memset(p_dst, 0x00, sizeof(p_dst));
         memset(pBuf, 0x00, sizeof(pBuf));
 
+        /*获取一行数据，去除空格*/
         while(i < BSP_MAX_ASC_PER_LINE)
         {
             temp = *p_cur++;      
