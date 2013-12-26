@@ -1014,8 +1014,6 @@ static int bq275x0_firmware_program(struct i2c_client *client, const unsigned ch
     unsigned char p_dst[BSP_I2C_MAX_TRANSFER_LEN] = { 0 };
     unsigned char ucTmpBuf[16] = { 0 };
 
-    int rc = 0;
-
 bq275x0_firmware_program_begin:
     if(ulCounter > 10)
     {
@@ -1106,12 +1104,11 @@ bq275x0_firmware_program_begin:
                     }
                     printk(KERN_ERR "\n");
                     #endif                    
-						// TODO: fix 
-						rc = bq275x0_i2c_bytes_write(client, p_src[3], &p_src[4], ulLineLen-4);
-                    /**if(bq275x0_i2c_bytes_write(client, p_src[3], &p_src[4], ulLineLen-4) < 0)
+
+                    if(bq275x0_i2c_bytes_write(client, p_src[3], &p_src[4], ulLineLen-4) < 0)
                     {
                          printk(KERN_ERR "[%s,%d] bq275x0_i2c_bytes_write failed len=%d\n",__FUNCTION__,__LINE__,ulLineLen-4);                        
-                    }**/
+                    }
 
                     break;
                 

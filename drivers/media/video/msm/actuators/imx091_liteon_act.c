@@ -347,8 +347,7 @@ static int imx091_liteon_actuator_set_hwparam(void *data, u64 val)
 
 static int imx091_liteon_actuator_get_hwparam(void *data, u64 *val)
 {
-	//*val = imx091_liteon_hw_params[1];
-	*val = imx091_liteon_hw_params[0];
+	*val = imx091_liteon_hw_params[1];
 	return 0;
 }
 
