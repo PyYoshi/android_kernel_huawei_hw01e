@@ -38,9 +38,6 @@
 #include <linux/memory.h>
 #include <linux/memory_hotplug.h>
 
-#ifdef CONFIG_HUAWEI_FEATURE_LOW_MEMORY_KILLER_STUB
-#include "../../char/lowmemorykiller_stub.h"
-#endif
 static uint32_t lowmem_debug_level = 2;
 static int lowmem_adj[6] = {
 	0,
@@ -59,19 +56,13 @@ static int lowmem_minfree_size = 4;
 
 static unsigned int offlining;
 static struct task_struct *lowmem_deathpending;
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-static DEFINE_SPINLOCK(lowmem_deathpending_lock);
-#else
 static unsigned long lowmem_deathpending_timeout;
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
 
 #define lowmem_print(level, x...)			\
 	do {						\
 		if (lowmem_debug_level >= (level))	\
 			printk(x);			\
 	} while (0)
-
-
 
 static int
 task_notify_func(struct notifier_block *self, unsigned long val, void *data);
@@ -80,32 +71,14 @@ static struct notifier_block task_nb = {
 	.notifier_call	= task_notify_func,
 };
 
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-static void task_free_fn(struct work_struct *work)
-{
-        unsigned long flags;
-
-        task_free_unregister(&task_nb);
-        spin_lock_irqsave(&lowmem_deathpending_lock, flags);
-        lowmem_deathpending = NULL;
-        spin_unlock_irqrestore(&lowmem_deathpending_lock, flags);
-}
-static DECLARE_WORK(task_free_work, task_free_fn);
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-
 static int
 task_notify_func(struct notifier_block *self, unsigned long val, void *data)
 {
 	struct task_struct *task = data;
 
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-	if (task == lowmem_deathpending) {
-             schedule_work(&task_free_work);
-        }
-#else
 	if (task == lowmem_deathpending)
 		lowmem_deathpending = NULL;
-#endif
+
 	return NOTIFY_OK;
 }
 
@@ -150,9 +123,6 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	int other_file = global_page_state(NR_FILE_PAGES) -
 						global_page_state(NR_SHMEM);
 	struct zone *zone;
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-	unsigned long flags;
-#endif
 
 	if (offlining) {
 		/* Discount all free space in the section being offlined */
@@ -173,14 +143,9 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	 * this pass.
 	 *
 	 */
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-	if (lowmem_deathpending)
-		return 0;
-#else
 	if (lowmem_deathpending &&
 	    time_before_eq(jiffies, lowmem_deathpending_timeout))
 		return 0;
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
 
 	if (lowmem_adj_size < array_size)
 		array_size = lowmem_adj_size;
@@ -244,149 +209,19 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 			     p->pid, p->comm, oom_adj, tasksize);
 	}
 	if (selected) {
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-	    spin_lock_irqsave(&lowmem_deathpending_lock, flags);
-            if (!lowmem_deathpending) {
-                lowmem_print(1, "send sigkill to %d (%s), adj %d, size %d\n",
-			     selected->pid, selected->comm,
-			     selected_oom_adj, selected_tasksize);
-		lowmem_deathpending = selected;
-		task_free_register(&task_nb);
-#ifdef CONFIG_HUAWEI_FEATURE_LOW_MEMORY_KILLER_STUB
-                sysLowKernel_write(selected);
-#endif
-		force_sig(SIGKILL, selected);
-		rem -= selected_tasksize;
-	    }
-	    spin_unlock_irqrestore(&lowmem_deathpending_lock, flags);
-#else//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-
 		lowmem_print(1, "send sigkill to %d (%s), adj %d, size %d\n",
 			     selected->pid, selected->comm,
 			     selected_oom_adj, selected_tasksize);
 		lowmem_deathpending = selected;
 		lowmem_deathpending_timeout = jiffies + HZ;
-#ifdef CONFIG_HUAWEI_FEATURE_LOW_MEMORY_KILLER_STUB
-        sysLowKernel_write(selected);
-#endif
 		force_sig(SIGKILL, selected);
 		rem -= selected_tasksize;
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
 	}
 	lowmem_print(4, "lowmem_shrink %lu, %x, return %d\n",
 		     sc->nr_to_scan, sc->gfp_mask, rem);
 	read_unlock(&tasklist_lock);
 	return rem;
 }
-
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-static void lowmem_vm_shrinker(int largest, int rss_threshold)
-{
-       struct task_struct *p;
-       struct task_struct *selected = NULL;
-       int vmsize, rssize;
-       int min_adj, min_large_adj;
-       int selected_vmsize = 0;
-       int selected_oom_adj;
-       int array_size = ARRAY_SIZE(lowmem_adj);
-       unsigned long flags;
-
-       /*
-        * If we already have a death outstanding, then
-       * bail out right away; indicating to vmscan
-        * that we have nothing further to offer on
-        * this pass.
-        *
-        */
-      if (lowmem_deathpending)
-               return;
-
-       if (lowmem_adj_size < array_size)
-               array_size = lowmem_adj_size;
-       if (lowmem_minfree_size < array_size)
-              array_size = lowmem_minfree_size;
-
-       min_adj = lowmem_adj[array_size - 2];  /* lock onto cached processes only */
-       min_large_adj = lowmem_adj[array_size - 3];  /* Minimum priority for large processes */
-
-       lowmem_print(3, "lowmem_vm_shrink ma %d, large ma %d, largest %d, rss_threshold=%d\n",
-                     min_adj, min_large_adj, largest, rss_threshold);
-
-       selected_oom_adj = min_adj;
-       read_lock(&tasklist_lock);
-       for_each_process(p) {
-               struct mm_struct *mm;
-               struct signal_struct *sig;
-               int oom_adj;
-
-               task_lock(p);
-               mm = p->mm;
-               sig = p->signal;
-               if (!mm || !sig) {
-                       task_unlock(p);
-                       continue;
-               }
-               oom_adj = sig->oom_adj;
-               vmsize = get_mm_hiwater_vm(mm);
-                rssize = get_mm_rss(mm) * PAGE_SIZE;
-               task_unlock(p);
-
-               if (vmsize <= 0)
-                       continue;
-
-                /* Only look at cached processes */
-                if (oom_adj < min_adj) {
-                    /* Is this a very large home process in the background? */
-                    if ((oom_adj > min_large_adj) && (rssize >= rss_threshold)) {
-                        selected = p;
-                        selected_vmsize = vmsize;
-                       selected_oom_adj = oom_adj;
-                        lowmem_print(2, "lowmem_vm_shrink override %d (%s), adj %d, vm size %d, rs size %d to kill",
-                                         p->pid, p->comm, oom_adj, vmsize, rssize);
-                        break;
-                   }
-
-                    continue;
-                }
-
-                /* Is this process a better fit than last selected? */
-               if (selected) {
-                       if (oom_adj < selected_oom_adj)
-                               continue;
-
-                        /* If looking for largest, ignore priority */
-                       if ((largest || (oom_adj == selected_oom_adj)) &&
-                           (vmsize <= selected_vmsize))
-                               continue;
-               }
-
-               selected = p;
-               selected_vmsize = vmsize;
-
-               if (largest == 0)  /* Do not filter by priority if searching for largest */
-                       selected_oom_adj = oom_adj;
-
-               lowmem_print(2, "lowmem_vm_shrink select %d (%s), adj %d, vm size %d, rs size %d to kill\n",
-                            p->pid, p->comm, oom_adj, vmsize, rssize);
-       }
-       if (selected) {
-               spin_lock_irqsave(&lowmem_deathpending_lock, flags);
-               if (!lowmem_deathpending) {
-                       lowmem_print(1,
-                               "lowmem_vm_shrink send sigkill to %d (%s), adj %d, vm size %d\n",
-                               selected->pid, selected->comm,
-                               selected_oom_adj, selected_vmsize);
-                       lowmem_deathpending = selected;
-                       task_free_register(&task_nb);
-                       force_sig(SIGKILL, selected);
-               }
-               spin_unlock_irqrestore(&lowmem_deathpending_lock, flags);
-       }
-       lowmem_print(4, "lowmem_vm_shrink, saved %d\n", selected_vmsize);
-       read_unlock(&tasklist_lock);
-       return;
-}
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
 
 static struct shrinker lowmem_shrinker = {
 	.shrink = lowmem_shrink,
@@ -395,35 +230,18 @@ static struct shrinker lowmem_shrinker = {
 
 static int __init lowmem_init(void)
 {
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-       extern void kgsl_register_shrinker(void (*shrink)(int largest, int threshold));
-
-       kgsl_register_shrinker(lowmem_vm_shrinker);
-#else
 	task_free_register(&task_nb);
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
 	register_shrinker(&lowmem_shrinker);
 #ifdef CONFIG_MEMORY_HOTPLUG
 	hotplug_memory_notifier(lmk_hotplug_callback, 0);
-#endif
-#ifdef CONFIG_HUAWEI_FEATURE_LOW_MEMORY_KILLER_STUB
-    registerlowmem();
 #endif
 	return 0;
 }
 
 static void __exit lowmem_exit(void)
 {
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-	extern void kgsl_unregister_shrinker(void);
-	kgsl_unregister_shrinker();
-#else
-	task_free_unregister(&task_nb);
-#endif
 	unregister_shrinker(&lowmem_shrinker);
-#ifdef CONFIG_HUAWEI_FEATURE_LOW_MEMORY_KILLER_STUB
-    unregisterlowmem();
-#endif
+	task_free_unregister(&task_nb);
 }
 
 module_param_named(cost, lowmem_shrinker.seeks, int, S_IRUGO | S_IWUSR);

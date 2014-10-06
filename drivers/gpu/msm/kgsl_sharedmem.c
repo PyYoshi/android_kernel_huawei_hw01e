@@ -39,9 +39,6 @@ container_of(a, struct kgsl_mem_entry_attribute, attr)
 	.show = _show, \
 }
 
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-static void (*kgsl_shrink)(int largest, int rss_threshold) = NULL;
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
 /*
  * A structure to hold the attributes for a particular memory type.
  * For each memory type in each process we store the current and maximum
@@ -515,32 +512,6 @@ _kgsl_sharedmem_page_alloc(struct kgsl_memdesc *memdesc,
 	KGSL_STATS_ADD(size, kgsl_driver.stats.page_alloc,
 		kgsl_driver.stats.page_alloc_max);
 
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-#if 0//def CONFIG_KGSL_PER_PROCESS_PAGE_TABLE
-       allocated_pagetables = bitmap_weight(kgsl_driver.ptpool.bitmap, kgsl_pagetable_count);
-
-       if ((kgsl_driver.stats.vmalloc > CONFIG_MSM_KGSL_VM_THRESHOLD) ||
-               (allocated_pagetables >= KGSL_PAGETABLE_THRESHOLD)) {
-/*
-              printk(KERN_ALERT "kgsl: vmalloc=%x, ptcnt=%d, map=%lx\n",
-                       kgsl_driver.stats.vmalloc,
-                       allocated_pagetables,
-                       *kgsl_driver.ptpool.bitmap);
-*/
-               if (kgsl_shrink != (void *)0)
-                       (*kgsl_shrink)(allocated_pagetables < KGSL_PAGETABLE_THRESHOLD,
-                                       CONFIG_MSM_KGSL_VM_RSS_THRESHOLD);
-       }
-#else
-       if (kgsl_driver.stats.vmalloc > CONFIG_HUAWEI_MSM_KGSL_VM_THRESHOLD) {
-               printk(KERN_ALERT "kgsl shrink: vmalloc=%x\n",
-                       kgsl_driver.stats.vmalloc);
-               if (kgsl_shrink != (void *)0)
-                       (*kgsl_shrink)(0, CONFIG_HUAWEI_MSM_KGSL_VM_RSS_THRESHOLD);
-       }
-#endif
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-
 	order = get_order(size);
 
 	if (order < 16)
@@ -798,18 +769,3 @@ kgsl_sharedmem_map_vma(struct vm_area_struct *vma,
 	return 0;
 }
 EXPORT_SYMBOL(kgsl_sharedmem_map_vma);
-
-#ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
-void kgsl_register_shrinker(void (*shrink)(int largest, int rss_threshold))
-{
-   kgsl_shrink = shrink;
-}
-
-void kgsl_unregister_shrinker(void)
-{
-   kgsl_shrink = (void *)0;
-}
-
-EXPORT_SYMBOL(kgsl_register_shrinker);
-EXPORT_SYMBOL(kgsl_unregister_shrinker);
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER

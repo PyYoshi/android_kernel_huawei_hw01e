@@ -675,10 +675,6 @@ config CSDIO_DEVICE_ID
 	help
 	  Enter device id for targeted sdio device, this may be overwritten by
 	  module parameters.
-
-config HUAWEI_FEATURE_LOW_MEMORY_KILLER_STUB
-        bool "Systemstattool Low Memory Killer Stub"
-        default N
-        depends on ANDROID_LOW_MEMORY_KILLER
+.
 endmenu
 
