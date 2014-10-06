@@ -265,13 +265,6 @@ config  HUAWEI_KERNEL
 	bool "HUAWEI Product"
 	depends on ARCH_MSM8960
 
-config HUAWEI_KERNEL_DEBUG
-	bool "HUAWEI kernel debug"
-	depends on HUAWEI_KERNEL
-	default n
-	help
-	  Select Y if print HUAWEI log
-
 choice
 	prompt "MSM SoC Revision"
 	default MSM_SOC_REV_NONE

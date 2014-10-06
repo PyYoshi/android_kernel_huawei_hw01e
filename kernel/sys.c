@@ -54,14 +54,6 @@
 #include <asm/io.h>
 #include <asm/unistd.h>
 
-#ifdef CONFIG_HUAWEI_KERNEL_DEBUG
-#define DBG(format, arg...) do { \
-    printk(KERN_DEBUG "%s: " format "\n" , __func__ , ## arg); \
-} while (0)
-#else
-#define DBG(format, arg...) do { } while (0)
-#endif
-
 #ifndef SET_UNALIGN_CTL
 # define SET_UNALIGN_CTL(a,b)	(-EINVAL)
 #endif
@@ -386,27 +378,14 @@ EXPORT_SYMBOL_GPL(kernel_halt);
  */
 void kernel_power_off(void)
 {
-    DBG("begin");
-    
 	kernel_shutdown_prepare(SYSTEM_POWER_OFF);
-
-    DBG("kernel_shutdown_prepare complete");
-    
 	if (pm_power_off_prepare)
 		pm_power_off_prepare();
-
-    DBG("before  disable_nonboot_cpus");
-    
 	disable_nonboot_cpus();
-
-    DBG("disable_nonboot_cpus complete");
-    
 	syscore_shutdown();
 	printk(KERN_EMERG "Power down.\n");
 	kmsg_dump(KMSG_DUMP_POWEROFF);
 	machine_power_off();
-
-    DBG("end");
 }
 EXPORT_SYMBOL_GPL(kernel_power_off);
 
@@ -425,8 +404,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
 {
 	char buffer[256];
 	int ret = 0;
-
-    DBG("SYSCALL_DEFINE4  power off debug begin");
 
 	/* We only trust the superuser with rebooting the system. */
 	if (!capable(CAP_SYS_BOOT))
@@ -451,7 +428,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
 	mutex_lock(&reboot_mutex);
 	switch (cmd) {
 	case LINUX_REBOOT_CMD_RESTART:
-        DBG("case LINUX_REBOOT_CMD_RESTART");
 		kernel_restart(NULL);
 		break;
 
@@ -469,7 +445,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
 		panic("cannot halt");
 
 	case LINUX_REBOOT_CMD_POWER_OFF:
-        DBG("case LINUX_REBOOT_CMD_POWER_OFF");
 		kernel_power_off();
 		do_exit(0);
 		break;
@@ -501,9 +476,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
 		break;
 	}
 	mutex_unlock(&reboot_mutex);
-
-    DBG("end");
-    
 	return ret;
 }
 
