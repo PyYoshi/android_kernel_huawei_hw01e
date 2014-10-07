@@ -35,6 +35,7 @@
 #endif
 #include <mach/msm_subsystem_map.h>
 #include <mach/iommu_domains.h>
+
 #define DRIVER_NAME "msm_rotator"
 
 #define MSM_ROTATOR_BASE (msm_rotator_dev->io_base)
@@ -282,8 +283,7 @@ static void disable_rot_clks(void)
 	if (msm_rotator_dev->pclk != NULL)
 		clk_disable(msm_rotator_dev->pclk);
 	if (msm_rotator_dev->regulator)
-	/*delete some unused lines*/
-		      regulator_disable(msm_rotator_dev->regulator);
+		regulator_disable(msm_rotator_dev->regulator);
 }
 
 static void msm_rotator_rot_clk_work_f(struct work_struct *work)
