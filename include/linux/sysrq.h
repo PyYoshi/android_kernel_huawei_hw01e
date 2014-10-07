@@ -11,8 +11,6 @@
  *	based upon discusions in irc://irc.openprojects.net/#kernelnewbies
  */
 
-
-
 #ifndef _LINUX_SYSRQ_H
 #define _LINUX_SYSRQ_H
 

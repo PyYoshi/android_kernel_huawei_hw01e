@@ -16,7 +16,6 @@
 ** GNU General Public License for more details.
 */
 
-
 #include <linux/module.h>
 #include <linux/file.h>
 #include <linux/fs.h>

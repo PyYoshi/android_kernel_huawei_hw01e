@@ -17,7 +17,6 @@
  *
  */
 
-
 #ifndef __MTD_ABI_H__
 #define __MTD_ABI_H__
 
