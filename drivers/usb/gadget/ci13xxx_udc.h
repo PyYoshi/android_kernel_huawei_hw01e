@@ -13,9 +13,6 @@
  *              Structures, registers and logging macros
  */
 
-
-
-
 #ifndef _CI13XXX_h_
 #define _CI13XXX_h_
 

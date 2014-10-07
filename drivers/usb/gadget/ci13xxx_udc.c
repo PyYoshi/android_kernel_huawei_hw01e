@@ -50,10 +50,6 @@
  * - Gadget API (majority of optional features)
  * - Suspend & Remote Wakeup
  */
-
-
-
- 
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/dmapool.h>
@@ -178,7 +174,6 @@ static struct {
 #define CAP_LAST            (hw_bank.lpm ? 0x12CUL : 0x0C0UL)
 
 static void enum_delay_work_func(struct work_struct *work);
-
 
 /* maximum number of enpoints: valid only after hw_device_reset() */
 static unsigned hw_ep_max;

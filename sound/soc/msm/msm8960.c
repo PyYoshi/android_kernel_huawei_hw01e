@@ -10,7 +10,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/gpio.h>
@@ -176,9 +175,9 @@ static void msm8960_ext_spk_power_amp_on(u32 spk)
 				"turned on. spk = 0x%08x\n", __func__, spk);
 			return;
 		}
-		
+
 		//msm8960_ext_bottom_spk_pamp |= spk;
-             
+
 		if ((msm8960_ext_bottom_spk_pamp & BOTTOM_SPK_AMP_POS) &&
 			(msm8960_ext_bottom_spk_pamp & BOTTOM_SPK_AMP_NEG)) {
 
@@ -422,14 +421,11 @@ static const struct snd_soc_dapm_route common_audio_map[] = {
 
 	{"RX_BIAS", NULL, "MCLK"},
 	{"LDO_H", NULL, "MCLK"},
-		
-	
-	#if 0   
+	#if 0
 	/* Speaker path */
 	{"Ext Spk Bottom Pos", NULL, "LINEOUT1"},
 	{"Ext Spk Bottom Neg", NULL, "LINEOUT3"},
 
- 
 	{"Ext Spk Top Pos", NULL, "LINEOUT2"},
 	{"Ext Spk Top Neg", NULL, "LINEOUT4"},
 	#endif

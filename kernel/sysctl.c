@@ -18,10 +18,6 @@
  *  Removed it and replaced it with older style, 03/23/00, Bill Wendling
  */
 
-/*=================== M o d i f i c a t i o n   H i s t o r y =======================================*/
-/* DTS Number          Owner      Date        Description                                            */
-/*=================== M o d i f i c a t i o n   H i s t o r y =======================================*/
-
 #include <linux/module.h>
 #include <linux/mm.h>
 #include <linux/swap.h>

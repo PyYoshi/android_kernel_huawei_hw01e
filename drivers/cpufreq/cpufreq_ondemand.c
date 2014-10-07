@@ -31,7 +31,6 @@
  * It helps to keep variable names smaller, simpler
  */
 
-#define DEF_LPSPEED_COUNT_THRESHOLD			(5)
 #define DEF_FREQUENCY_DOWN_DIFFERENTIAL		(10)
 #define DEF_FREQUENCY_UP_THRESHOLD		(80)
 #define DEF_SAMPLING_DOWN_FACTOR		(1)
@@ -56,7 +55,6 @@
 #define MIN_SAMPLING_RATE_RATIO			(2)
 
 static unsigned int min_sampling_rate;
-static unsigned int lpspeed_count = 0;
 
 #define LATENCY_MULTIPLIER			(1000)
 #define MIN_LATENCY_MULTIPLIER			(100)
@@ -127,20 +125,10 @@ static struct dbs_tuners {
 	unsigned int sampling_down_factor;
 	int          powersave_bias;
 	unsigned int io_is_busy;
-	unsigned int input_freq;
-	unsigned int hispeed_freq;
-	unsigned int lpspeed_freq;
-	unsigned int lpspeed_count_threshold;
-	unsigned int lpspeed_enabled;
-	unsigned int restrict_freq;
-	unsigned int restrict_enabled;
 } dbs_tuners_ins = {
 	.up_threshold = DEF_FREQUENCY_UP_THRESHOLD,
 	.sampling_down_factor = DEF_SAMPLING_DOWN_FACTOR,
 	.down_differential = DEF_FREQUENCY_DOWN_DIFFERENTIAL,
-	.lpspeed_count_threshold = DEF_LPSPEED_COUNT_THRESHOLD,
-	.lpspeed_enabled = 0,
-	.restrict_enabled = 0,
 	.ignore_nice = 0,
 	.powersave_bias = 0,
 };
@@ -302,13 +290,6 @@ show_one(up_threshold, up_threshold);
 show_one(down_differential, down_differential);
 show_one(sampling_down_factor, sampling_down_factor);
 show_one(ignore_nice_load, ignore_nice);
-show_one(input_freq, input_freq);
-show_one(hispeed_freq, hispeed_freq);
-show_one(lpspeed_freq, lpspeed_freq);
-show_one(lpspeed_count_threshold, lpspeed_count_threshold);
-show_one(lpspeed_enabled, lpspeed_enabled);
-show_one(restrict_freq, restrict_freq);
-show_one(restrict_enabled, restrict_enabled);
 
 static ssize_t show_powersave_bias
 (struct kobject *kobj, struct attribute *attr, char *buf)
@@ -501,97 +482,6 @@ static ssize_t store_powersave_bias(struct kobject *a, struct attribute *b,
 	return count;
 }
 
-static ssize_t store_input_freq(struct kobject *a, struct attribute *b,
-				   const char *buf, size_t count)
-{
-	unsigned int input;
-	int ret;
-
-	ret = sscanf(buf, "%u", &input);
-	if (ret != 1)
-		return -EINVAL;
-	dbs_tuners_ins.input_freq = input;
-	return count;
-}
-
-static ssize_t store_hispeed_freq(struct kobject *a, struct attribute *b,
-				   const char *buf, size_t count)
-{
-	unsigned int input;
-	int ret;
-
-	ret = sscanf(buf, "%u", &input);
-	if (ret != 1)
-		return -EINVAL;
-	dbs_tuners_ins.hispeed_freq = min(input, dbs_tuners_ins.lpspeed_freq);
-	return count;
-}
-
-static ssize_t store_lpspeed_freq(struct kobject *a, struct attribute *b,
-				   const char *buf, size_t count)
-{
-	unsigned int input;
-	int ret;
-
-	ret = sscanf(buf, "%u", &input);
-	if (ret != 1)
-		return -EINVAL;
-	dbs_tuners_ins.lpspeed_freq = max(input, dbs_tuners_ins.hispeed_freq);
-	return count;
-}
-
-static ssize_t store_lpspeed_count_threshold(struct kobject *a, struct attribute *b,
-				   const char *buf, size_t count)
-{
-	unsigned int input;
-	int ret;
-
-	ret = sscanf(buf, "%u", &input);
-	if (ret != 1)
-		return -EINVAL;
-	dbs_tuners_ins.lpspeed_count_threshold = input;
-	return count;
-}
-
-static ssize_t store_lpspeed_enabled(struct kobject *a, struct attribute *b,
-				   const char *buf, size_t count)
-{
-	unsigned int input;
-	int ret;
-
-	ret = sscanf(buf, "%u", &input);
-	if (ret != 1)
-		return -EINVAL;
-	dbs_tuners_ins.lpspeed_enabled = !!input;
-	return count;
-}
-
-static ssize_t store_restrict_freq(struct kobject *a, struct attribute *b,
-				   const char *buf, size_t count)
-{
-	unsigned int input;
-	int ret;
-
-	ret = sscanf(buf, "%u", &input);
-	if (ret != 1)
-		return -EINVAL;
-	dbs_tuners_ins.restrict_freq = input;
-	return count;
-}
-
-static ssize_t store_restrict_enabled(struct kobject *a, struct attribute *b,
-				   const char *buf, size_t count)
-{
-	unsigned int input;
-	int ret;
-
-	ret = sscanf(buf, "%u", &input);
-	if (ret != 1)
-		return -EINVAL;
-	dbs_tuners_ins.restrict_enabled = !!input;
-	return count;
-}
-
 define_one_global_rw(sampling_rate);
 define_one_global_rw(io_is_busy);
 define_one_global_rw(up_threshold);
@@ -599,13 +489,6 @@ define_one_global_rw(down_differential);
 define_one_global_rw(sampling_down_factor);
 define_one_global_rw(ignore_nice_load);
 define_one_global_rw(powersave_bias);
-define_one_global_rw(input_freq);
-define_one_global_rw(hispeed_freq);
-define_one_global_rw(lpspeed_freq);
-define_one_global_rw(lpspeed_count_threshold);
-define_one_global_rw(lpspeed_enabled);
-define_one_global_rw(restrict_freq);
-define_one_global_rw(restrict_enabled);
 
 static struct attribute *dbs_attributes[] = {
 	&sampling_rate_min.attr,
@@ -616,13 +499,6 @@ static struct attribute *dbs_attributes[] = {
 	&ignore_nice_load.attr,
 	&powersave_bias.attr,
 	&io_is_busy.attr,
-	&input_freq.attr,
-	&hispeed_freq.attr,
-	&lpspeed_freq.attr,
-	&lpspeed_count_threshold.attr,
-	&lpspeed_enabled.attr,
-	&restrict_freq.attr,
-	&restrict_enabled.attr,
 	NULL
 };
 
@@ -646,15 +522,10 @@ static void dbs_freq_increase(struct cpufreq_policy *p, unsigned int freq)
 
 static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 {
-	/* Extrapolated load of this CPU */
-	unsigned int load_at_max_freq = 0;
 	unsigned int max_load_freq;
-	/* Current load across this CPU */
-	unsigned int cur_load = 0;
 
 	struct cpufreq_policy *policy;
 	unsigned int j;
-	unsigned int new_freq;
 
 	this_dbs_info->freq_lo = 0;
 	policy = this_dbs_info->cur_policy;
@@ -678,7 +549,7 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 		struct cpu_dbs_info_s *j_dbs_info;
 		cputime64_t cur_wall_time, cur_idle_time, cur_iowait_time;
 		unsigned int idle_time, wall_time, iowait_time;
-		unsigned int load_freq;
+		unsigned int load, load_freq;
 		int freq_avg;
 
 		j_dbs_info = &per_cpu(od_cpu_dbs_info, j);
@@ -728,20 +599,16 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 		if (unlikely(!wall_time || wall_time < idle_time))
 			continue;
 
-		cur_load = 100 * (wall_time - idle_time) / wall_time;
+		load = 100 * (wall_time - idle_time) / wall_time;
 
 		freq_avg = __cpufreq_driver_getavg(policy, j);
 		if (freq_avg <= 0)
 			freq_avg = policy->cur;
 
-		load_freq = cur_load * freq_avg;
+		load_freq = load * freq_avg;
 		if (load_freq > max_load_freq)
 			max_load_freq = load_freq;
 	}
-	/* calculate the scaled load across CPU */
-	load_at_max_freq = (cur_load * policy->cur)/policy->cpuinfo.max_freq;
-
-	cpufreq_notify_utilization(policy, load_at_max_freq);
 
 	/* Check for frequency increase */
 	if (max_load_freq > dbs_tuners_ins.up_threshold * policy->cur) {
@@ -749,35 +616,8 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 		if (policy->cur < policy->max)
 			this_dbs_info->rate_mult =
 				dbs_tuners_ins.sampling_down_factor;
-		if (dbs_tuners_ins.lpspeed_enabled) {
-		    new_freq = min(dbs_tuners_ins.lpspeed_freq, policy->max);
-		    if (policy->cur < dbs_tuners_ins.hispeed_freq) {
-		        new_freq = min(new_freq, dbs_tuners_ins.hispeed_freq);
-		        if (dbs_tuners_ins.restrict_enabled) {
-		            new_freq = min(new_freq, dbs_tuners_ins.restrict_freq);
-		        }
-		        dbs_freq_increase(policy, new_freq);
-		        lpspeed_count = 0;
-		    } else if (policy->cur <= new_freq
-		        && lpspeed_count < dbs_tuners_ins.lpspeed_count_threshold) {
-		        if (dbs_tuners_ins.restrict_enabled) {
-		            new_freq = min(new_freq, dbs_tuners_ins.restrict_freq);
-		        }
-		        dbs_freq_increase(policy, new_freq);
-		        lpspeed_count++;
-		    } else if (dbs_tuners_ins.restrict_enabled) {
-		        new_freq = min(policy->max, dbs_tuners_ins.restrict_freq);
-		        dbs_freq_increase(policy, new_freq);
-		    } else {
-		        dbs_freq_increase(policy, policy->max);
-		    }
-		} else {
-		    dbs_freq_increase(policy, policy->max);
-		}
+		dbs_freq_increase(policy, policy->max);
 		return;
-	}
-	if (dbs_tuners_ins.lpspeed_enabled) {
-	    lpspeed_count = 0;
 	}
 
 	/* Check for frequency decrease */
@@ -901,7 +741,6 @@ static void dbs_refresh_callback(struct work_struct *unused)
 	struct cpufreq_policy *policy;
 	struct cpu_dbs_info_s *this_dbs_info;
 	unsigned int cpu = smp_processor_id();
-	unsigned int new_freq;
 
 	if (lock_policy_rwsem_write(cpu) < 0)
 		return;
@@ -914,30 +753,14 @@ static void dbs_refresh_callback(struct work_struct *unused)
 		return;
 	}
 
-	if (dbs_tuners_ins.lpspeed_enabled) {
-	    new_freq = min(dbs_tuners_ins.input_freq, policy->max);
-	    if (dbs_tuners_ins.restrict_enabled) {
-	        new_freq = min(new_freq, dbs_tuners_ins.restrict_freq);
-	    }
-	    if (policy->cur < new_freq) {
-	        policy->cur = new_freq;
+	if (policy->cur < policy->max) {
+		policy->cur = policy->max;
 
-	        __cpufreq_driver_target(policy, new_freq,
-	                    CPUFREQ_RELATION_L);
-	        this_dbs_info->prev_cpu_idle = get_cpu_idle_time(cpu,
-	                &this_dbs_info->prev_cpu_wall);
-	    }
-	} else {
-	    if (policy->cur < policy->max) {
-	        policy->cur = policy->max;
-
-	        __cpufreq_driver_target(policy, policy->max,
-	                    CPUFREQ_RELATION_L);
-	        this_dbs_info->prev_cpu_idle = get_cpu_idle_time(cpu,
-	                &this_dbs_info->prev_cpu_wall);
-	    }
+		__cpufreq_driver_target(policy, policy->max,
+					CPUFREQ_RELATION_L);
+		this_dbs_info->prev_cpu_idle = get_cpu_idle_time(cpu,
+				&this_dbs_info->prev_cpu_wall);
 	}
-
 	unlock_policy_rwsem_write(cpu);
 }
 
@@ -957,33 +780,11 @@ static void dbs_input_event(struct input_handle *handle, unsigned int type,
 	}
 }
 
-/* Filter some input devices which we don't care */
-static int input_dev_filter(const char* input_dev_name)
-{
-    int ret = false;
-
-    if (strstr(input_dev_name, "input_accl")
-        || strstr(input_dev_name, "input_compass")
-        || strstr(input_dev_name, "light sensor")
-        || strstr(input_dev_name, "proximity sensor")) {
-        ret = true;
-    } else {
-        ret = false;
-    }
-
-    return ret;
-}
-
 static int dbs_input_connect(struct input_handler *handler,
 		struct input_dev *dev, const struct input_device_id *id)
 {
 	struct input_handle *handle;
 	int error;
-
-    /* Filter out those input_dev that we don't care */
-    if (input_dev_filter(dev->name)) {
-        return 0;
-    }
 
 	handle = kzalloc(sizeof(struct input_handle), GFP_KERNEL);
 	if (!handle)
@@ -1087,10 +888,6 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 				max(min_sampling_rate,
 				    latency * LATENCY_MULTIPLIER);
 			dbs_tuners_ins.io_is_busy = should_io_be_busy();
-			dbs_tuners_ins.input_freq = policy->max;
-			dbs_tuners_ins.hispeed_freq = policy->max;
-			dbs_tuners_ins.lpspeed_freq = policy->max;
-			dbs_tuners_ins.restrict_freq = policy->max;
 		}
 		if (!cpu)
 			rc = input_register_handler(&dbs_input_handler);

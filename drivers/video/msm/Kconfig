@@ -557,8 +557,6 @@ config FB_MSM_MIPI_SIMULATOR_VIDEO_PANEL
 	bool "MIPI Simulator Video Panel"
 	select FB_MSM_MIPI_SIMULATOR_VIDEO
 
-#/* delete 11 lines for lcd id self detect,all lcd drivers should be compiled, so move out the choice */
-
 config FB_MSM_EBI2_TMD_QVGA_EPSON_QCIF
 	bool "EBI2 TMD QVGA Epson QCIF Dual Panel"
 	select FB_MSM_EBI2

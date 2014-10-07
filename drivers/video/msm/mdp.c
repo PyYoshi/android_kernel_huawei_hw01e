@@ -1430,7 +1430,6 @@ void mdp_pipe_ctrl(MDP_BLOCK_TYPE block, MDP_BLOCK_POWER_STATE state,
 	 * power to ON
 	 */
 	WARN_ON(isr == TRUE && state == MDP_BLOCK_POWER_ON);
-	/*delete some unused lines*/
 
 	spin_lock_irqsave(&mdp_spin_lock, flag);
 	if (MDP_BLOCK_POWER_ON == state) {
@@ -1540,9 +1539,6 @@ void mdp_pipe_ctrl(MDP_BLOCK_TYPE block, MDP_BLOCK_POWER_STATE state,
 				}
 				if (mdp_lut_clk != NULL)
 					clk_disable(mdp_lut_clk);
-/* suggestion from qualcomm,fix bug: cmd mipi panel can't bright up */
-				//if (footswitch != NULL)
-					//regulator_disable(footswitch);
 			} else {
 				/* send workqueue to turn off mdp power */
 				queue_delayed_work(mdp_pipe_ctrl_wq,
@@ -1553,9 +1549,6 @@ void mdp_pipe_ctrl(MDP_BLOCK_TYPE block, MDP_BLOCK_POWER_STATE state,
 		} else if ((!mdp_all_blocks_off) && (!mdp_current_clk_on)) {
 			mdp_current_clk_on = TRUE;
 			/* turn on MDP clks */
-/* suggestion from qualcomm,fix bug: cmd mipi panel can't bright up */
-			//if (footswitch != NULL)
-				//regulator_enable(footswitch);
 			for (i = 0; i < pdev_list_cnt; i++) {
 				pdata = (struct msm_fb_panel_data *)
 					pdev_list[i]->dev.platform_data;
@@ -2099,7 +2092,6 @@ static int mdp_irq_clk_setup(char cont_splashScreen)
 	disable_irq(mdp_irq);
 
 	footswitch = regulator_get(NULL, "fs_mdp");
-/* suggestion from qualcomm,fix bug: cmd mipi panel can't bright up */
 	if (IS_ERR(footswitch))
 		footswitch = NULL;
 	else {

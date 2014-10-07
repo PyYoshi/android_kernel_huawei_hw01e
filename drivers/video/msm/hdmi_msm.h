@@ -17,8 +17,6 @@
 #include "external_common.h"
 /* #define PORT_DEBUG */
 
-/* #define MHL_CERTIFICATE */
-
 #ifdef PORT_DEBUG
 const char *hdmi_msm_name(uint32 offset);
 void hdmi_outp(uint32 offset, uint32 value);

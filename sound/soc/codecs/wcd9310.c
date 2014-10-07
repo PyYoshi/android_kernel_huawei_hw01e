@@ -9,7 +9,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/firmware.h>
@@ -5512,6 +5511,7 @@ static void tabla_hs_remove_irq_nogpio(struct tabla_priv *priv)
 		 * switched to VDDIO.
 		 */
 		tabla_codec_switch_micbias(codec, 0);
+
 		tabla_codec_report_plug(codec, 0, SND_JACK_HEADSET);
 		tabla_codec_cleanup_hs_polling(codec);
 		tabla_codec_enable_hs_detect(codec, 1,
