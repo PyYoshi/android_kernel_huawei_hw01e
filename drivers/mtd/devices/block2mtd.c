@@ -6,7 +6,6 @@
  *
  * Licence: GPL
  */
-
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/blkdev.h>

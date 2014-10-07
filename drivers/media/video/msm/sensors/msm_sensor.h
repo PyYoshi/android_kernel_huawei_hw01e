@@ -139,8 +139,6 @@ struct msm_sensor_fn_t {
     int (*sensor_set_whitebalance_yuv) (struct msm_sensor_ctrl_t *s_ctrl,char wb);
 
 	int (*sensor_otp_reading)(struct sensor_cfg_data *cfg);
-
-
 };
 
 struct msm_sensor_ctrl_t {

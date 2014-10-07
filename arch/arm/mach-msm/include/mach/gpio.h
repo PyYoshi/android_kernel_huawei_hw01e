@@ -1,5 +1,3 @@
-
-
 /*
  * Copyright (C) 2007 Google, Inc.
  * Copyright (c) 2009-2011, Code Aurora Forum. All rights reserved.

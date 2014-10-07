@@ -251,7 +251,7 @@ static int pm8xxx_led_pwm_work(struct pm8xxx_led_data *led)
 	int rc = 0;
 
 	if (led->pwm_duty_cycles == NULL) {
-		 //duty_us =(led->pwm_period_us * led->cdev.brightness) /
+		 //duty_us = (led->pwm_period_us * led->cdev.brightness) /
 								//LED_FULL;
 		duty_us = led->on_time;
 		rc = pwm_config(led->pwm_dev, duty_us, led->pwm_period_us);

@@ -11,9 +11,6 @@
  * GNU General Public License for more details.
  *
  */
-
-  
-
 #include <linux/kernel.h>
 #include <linux/err.h>
 #include <linux/module.h>

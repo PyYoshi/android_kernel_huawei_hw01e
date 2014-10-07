@@ -1,5 +1,3 @@
-
-
 /* Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -549,23 +547,13 @@ static struct pm8xxx_led_platform_data pm8xxx_leds_pdata_liquid = {
 	.num_configs = ARRAY_SIZE(pm8921_led_configs_liquid),
 };
 
-
 static struct led_info pm8921_led_info[] = {
-	/*[0] = {
-		.name			= "led:battery_charging",
-		.default_trigger	= "battery-charging",
-	},
-	[1] = {
-		.name			= "led:battery_full",
-		.default_trigger	= "battery-full",
-	},*/
 #ifdef CONFIG_HUAWEI_KERNEL
 	[0] = {
 		.name			= "button-backlight",
 		.default_trigger	= "led_button_backlight",
 		.gpio			= PM8921_MPP_PM_TO_SYS(PM8921_AMUX_MPP_11),
 	},
-/* add 3-color led light */
 	[1] = {
 		.name			= "red",
 		.default_trigger        = "led_red",
@@ -622,16 +610,8 @@ static struct pm8xxx_led_config pm8921_led_configs[] = {
 		.max_current = PM8921_LC_LED_MAX_CURRENT,
 		.pwm_channel = 4,
 		.pwm_period_us = PM8XXX_LED_PWM_PERIOD,
-        },
+	},
 #else
-     /* [0] = {
-                .id = PM8XXX_ID_LED_0,
-                .mode = PM8XXX_LED_MODE_MANUAL,
-        },
-        [1] = {
-                .id = PM8XXX_ID_LED_1,
-                .mode = PM8XXX_LED_MODE_MANUAL,
-        },*/
         [0] = {
                 .id = PM8XXX_ID_LED_KB_LIGHT,
                 .mode = PM8XXX_LED_MODE_MANUAL,

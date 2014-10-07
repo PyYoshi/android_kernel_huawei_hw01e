@@ -529,6 +529,3 @@ int32_t msm_sensor_write_all_conf_array_delay(struct msm_camera_i2c_client *clie
 	}
 	return rc;
 }
-
-
-

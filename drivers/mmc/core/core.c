@@ -1,5 +1,3 @@
-
-
 /*
  *  linux/drivers/mmc/core/core.c
  *

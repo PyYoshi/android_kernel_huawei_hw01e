@@ -817,8 +817,8 @@ static struct msm_gpiomux_config msm8960_sdcc2_configs[] __initdata = {
 		.settings = {
 			[GPIOMUX_ACTIVE]    = &sdcc2_clk_actv_cfg,
 			[GPIOMUX_SUSPENDED] = &sdcc2_suspend_cfg,
-                },
-        },
+		},
+	},
 };
 #endif
 

@@ -1,5 +1,3 @@
-
-
 /*
  *  linux/drivers/mmc/host/msm_sdcc.c - Qualcomm MSM 7X00A SDCC Driver
  *

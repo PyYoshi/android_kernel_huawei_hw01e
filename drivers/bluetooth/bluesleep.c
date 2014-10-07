@@ -23,8 +23,8 @@
 				 Sleep-Mode Protocol from the Host side
    2006-Sep-08  Motorola         Added workqueue for handling sleep work.
    2007-Jan-24  Motorola         Added mbm_handle_ioi() call to ISR.
-*/
 
+*/
 
 #include <linux/module.h>	/* kernel module definitions */
 #include <linux/errno.h>
@@ -695,7 +695,7 @@ static int bluesleep_write_proc_proto(struct file *file, const char *buffer,
 
 	if (copy_from_user(&proto, buffer, 1))
 		return -EFAULT;
-        
+
 	if (proto == '0')
 		bluesleep_stop();
 	else
@@ -742,7 +742,7 @@ static int __init bluesleep_probe(struct platform_device *pdev)
 	ret = gpio_direction_input(bsi->host_wake);
 	if (ret)
 		goto free_bt_host_wake;
-        
+
 	res = platform_get_resource_byname(pdev, IORESOURCE_IO, "gpio_ext_wake");
 	if (!res) {
 		BT_ERR("couldn't find ext_wake gpio\n");

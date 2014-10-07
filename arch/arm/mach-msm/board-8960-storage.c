@@ -24,8 +24,6 @@
 #include "board-8960.h"
 #include "board-storage-common-a.h"
 
-
-
 #ifdef CONFIG_HUAWEI_KERNEL
 #include <hsad/config_interface.h>
 #endif
@@ -323,7 +321,7 @@ static struct msm_mmc_pin_data mmc_slot_pin_data[MAX_SDCC_CONTROLLER] = {
 		.pad_data = &mmc_pad_data[SDCC3],
 	},
 #ifdef CONFIG_MMC_MSM_SDC4_SUPPORT
-    [SDCC4] = {
+	[SDCC4] = {
 		.pad_data = &mmc_pad_data[SDCC4],
 	},
 #endif

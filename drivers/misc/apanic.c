@@ -14,7 +14,6 @@
  *
  */
 
-
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -193,10 +192,7 @@ static int apanic_proc_read(char *buffer, char **start, off_t offset,
 		phy_offset(ctx->mtd, (page_no * ctx->mtd->writesize)),
 		ctx->mtd->writesize,
 		&len, ctx->bounce);
-    
-	//if (page_offset)//hanping
-	//	count -= page_offset;
-	
+
 	count = count < (PAGE_SIZE - page_offset) ? count : (PAGE_SIZE - page_offset);
 	
 	memcpy(buffer, ctx->bounce + page_offset, count);
@@ -581,10 +577,10 @@ static int apanic(struct notifier_block *this, unsigned long event,
 		goto out;
 	}
 
-       ctx->mtd->sync(ctx->mtd);
-	   
+        ctx->mtd->sync(ctx->mtd);
+
 	printk(KERN_EMERG "apanic: Panic dump sucessfully written to flash\n");
-	
+
 	enable_irq(USB1_HS_IRQ);
 	msm_watchdog_resume();
 

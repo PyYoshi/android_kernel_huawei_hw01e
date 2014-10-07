@@ -49,7 +49,6 @@ enum msm_camera_i2c_cmd_type {
 	MSM_CAMERA_I2C_CMD_POLL,
 };
 
-
 struct msm_camera_i2c_reg_conf {
 	uint16_t reg_addr;
 	uint16_t reg_data;

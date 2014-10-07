@@ -1428,7 +1428,6 @@ static struct acpu_level * __init select_freq_plan(void)
 		}
 #endif
 
-
 		scalable = scalable_8960;
 		if (cpu_is_krait_v1()) {
 			acpu_freq_tbl = v1;

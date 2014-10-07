@@ -131,7 +131,6 @@ struct tag_cmdline {
 
 bool is_runmode_factory(void);
 
-
 /* acorn RiscPC specific information */
 #define ATAG_ACORN	0x41000101
 
