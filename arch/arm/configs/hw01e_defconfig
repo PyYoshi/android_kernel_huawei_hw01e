@@ -2364,7 +2364,7 @@ CONFIG_ISDBTUNER=y
 #
 # MHL sii9244 support
 #
-CONFIG_HUAWEI_MHL_SII9244=y
+# CONFIG_HUAWEI_MHL_SII9244 is not set
 
 #
 # Console display driver support
