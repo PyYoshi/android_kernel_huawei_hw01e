@@ -1183,6 +1183,7 @@ try_again:
 				  &peeked, &err);
 	if (!skb)
 		goto out;
+
 	ulen = skb->len - sizeof(struct udphdr);
 	if (len > ulen)
 		len = ulen;
