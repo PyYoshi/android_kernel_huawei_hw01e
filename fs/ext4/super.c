@@ -3720,12 +3720,6 @@ no_journal:
 		mod_timer(&sbi->s_err_report, jiffies + 300*HZ); /* 5 minutes */
 
 	kfree(orig_data);
-	if (test_opt(sb, ERRORS_PANIC))
-    	ext4_msg(sb, KERN_INFO, "mounted filesystem errors=panic");
-	if (test_opt(sb, ERRORS_CONT))
-    	ext4_msg(sb, KERN_INFO, "mounted filesystem errors=continue");
-	if (test_opt(sb, ERRORS_RO))
-    	ext4_msg(sb, KERN_INFO, "mounted filesystem errors=remount-ro");
 	return 0;
 
 cantfind_ext4:

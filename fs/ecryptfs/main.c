@@ -176,7 +176,6 @@ enum { ecryptfs_opt_sig, ecryptfs_opt_ecryptfs_sig,
        ecryptfs_opt_fn_cipher, ecryptfs_opt_fn_cipher_key_bytes,
        ecryptfs_opt_unlink_sigs, ecryptfs_opt_mount_auth_tok_only,
        ecryptfs_opt_check_dev_ruid,
-	ecryptfs_opt_force_write_passthrough,
        ecryptfs_opt_err };
 
 static const match_table_t tokens = {
@@ -194,7 +193,6 @@ static const match_table_t tokens = {
 	{ecryptfs_opt_unlink_sigs, "ecryptfs_unlink_sigs"},
 	{ecryptfs_opt_mount_auth_tok_only, "ecryptfs_mount_auth_tok_only"},
 	{ecryptfs_opt_check_dev_ruid, "ecryptfs_check_dev_ruid"},
-	{ecryptfs_opt_force_write_passthrough, "force_write_passthrough"},
 	{ecryptfs_opt_err, NULL}
 };
 
@@ -387,11 +385,6 @@ static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options,
 		case ecryptfs_opt_mount_auth_tok_only:
 			mount_crypt_stat->flags |=
 				ECRYPTFS_GLOBAL_MOUNT_AUTH_TOK_ONLY;
-			break;
-		/* file encryption force write passthrough mount flag */
-		case ecryptfs_opt_force_write_passthrough:
-			mount_crypt_stat->flags |=
-				ECRYPTFS_FORCE_WRITE_PASSTHROUGH;
 			break;
 		case ecryptfs_opt_check_dev_ruid:
 			*check_ruid = 1;
