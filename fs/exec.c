@@ -1495,7 +1495,7 @@ static int do_execve_common(const char *filename,
 	if (retval < 0)
 		goto out;
 
-	retval = ccs_search_binary_handler(bprm, regs);
+	retval = search_binary_handler(bprm,regs);
 	if (retval < 0)
 		goto out;
 

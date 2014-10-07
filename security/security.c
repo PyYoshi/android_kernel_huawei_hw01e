@@ -202,10 +202,7 @@ int security_syslog(int type)
 
 int security_settime(const struct timespec *ts, const struct timezone *tz)
 {
-	int error = security_ops->settime(ts, tz);
-	if (!error && !ccs_capable(CCS_SYS_SETTIME))
-		error = -EPERM;
-	return error;
+	return security_ops->settime(ts, tz);
 }
 
 int security_vm_enough_memory(long pages)
@@ -296,27 +293,17 @@ int security_sb_statfs(struct dentry *dentry)
 int security_sb_mount(char *dev_name, struct path *path,
                        char *type, unsigned long flags, void *data)
 {
-	int error = security_ops->sb_mount(dev_name, path, type, flags, data);
-	if (!error)
-		error = ccs_mount_permission(dev_name, path, type, flags,
-					     data);
-	return error;
+	return security_ops->sb_mount(dev_name, path, type, flags, data);
 }
 
 int security_sb_umount(struct vfsmount *mnt, int flags)
 {
-	int error = security_ops->sb_umount(mnt, flags);
-	if (!error)
-		error = ccs_umount_permission(mnt, flags);
-	return error;
+	return security_ops->sb_umount(mnt, flags);
 }
 
 int security_sb_pivotroot(struct path *old_path, struct path *new_path)
 {
-	int error = security_ops->sb_pivotroot(old_path, new_path);
-	if (!error)
-		error = ccs_pivot_root_permission(old_path, new_path);
-	return error;
+	return security_ops->sb_pivotroot(old_path, new_path);
 }
 
 int security_sb_set_mnt_opts(struct super_block *sb,
@@ -366,133 +353,87 @@ EXPORT_SYMBOL(security_inode_init_security);
 int security_path_mknod(struct path *dir, struct dentry *dentry, int mode,
 			unsigned int dev)
 {
-	int error;
 	if (unlikely(IS_PRIVATE(dir->dentry->d_inode)))
 		return 0;
-	error = security_ops->path_mknod(dir, dentry, mode, dev);
-	if (!error)
-		error = ccs_mknod_permission(dentry, dir->mnt, mode, dev);
-	return error;
+	return security_ops->path_mknod(dir, dentry, mode, dev);
 }
 EXPORT_SYMBOL(security_path_mknod);
 
 int security_path_mkdir(struct path *dir, struct dentry *dentry, int mode)
 {
-	int error;
 	if (unlikely(IS_PRIVATE(dir->dentry->d_inode)))
 		return 0;
-	error = security_ops->path_mkdir(dir, dentry, mode);
-	if (!error)
-		error = ccs_mkdir_permission(dentry, dir->mnt, mode);
-	return error;
+	return security_ops->path_mkdir(dir, dentry, mode);
 }
 EXPORT_SYMBOL(security_path_mkdir);
 
 int security_path_rmdir(struct path *dir, struct dentry *dentry)
 {
-	int error;
 	if (unlikely(IS_PRIVATE(dir->dentry->d_inode)))
 		return 0;
-	error = security_ops->path_rmdir(dir, dentry);
-	if (!error)
-		error = ccs_rmdir_permission(dentry, dir->mnt);
-	return error;
+	return security_ops->path_rmdir(dir, dentry);
 }
 
 int security_path_unlink(struct path *dir, struct dentry *dentry)
 {
-	int error;
 	if (unlikely(IS_PRIVATE(dir->dentry->d_inode)))
 		return 0;
-	error = security_ops->path_unlink(dir, dentry);
-	if (!error)
-		error = ccs_unlink_permission(dentry, dir->mnt);
-	return error;
+	return security_ops->path_unlink(dir, dentry);
 }
 EXPORT_SYMBOL(security_path_unlink);
 
 int security_path_symlink(struct path *dir, struct dentry *dentry,
 			  const char *old_name)
 {
-	int error;
 	if (unlikely(IS_PRIVATE(dir->dentry->d_inode)))
 		return 0;
-	error = security_ops->path_symlink(dir, dentry, old_name);
-	if (!error)
-		error = ccs_symlink_permission(dentry, dir->mnt, old_name);
-	return error;
+	return security_ops->path_symlink(dir, dentry, old_name);
 }
 
 int security_path_link(struct dentry *old_dentry, struct path *new_dir,
 		       struct dentry *new_dentry)
 {
-	int error;
 	if (unlikely(IS_PRIVATE(old_dentry->d_inode)))
 		return 0;
-	error = security_ops->path_link(old_dentry, new_dir, new_dentry);
-	if (!error)
-		error = ccs_link_permission(old_dentry, new_dentry,
-					    new_dir->mnt);
-	return error;
+	return security_ops->path_link(old_dentry, new_dir, new_dentry);
 }
 
 int security_path_rename(struct path *old_dir, struct dentry *old_dentry,
 			 struct path *new_dir, struct dentry *new_dentry)
 {
-	int error;
 	if (unlikely(IS_PRIVATE(old_dentry->d_inode) ||
 		     (new_dentry->d_inode && IS_PRIVATE(new_dentry->d_inode))))
 		return 0;
-	error = security_ops->path_rename(old_dir, old_dentry, new_dir,
-					  new_dentry);
-	if (!error)
-		error = ccs_rename_permission(old_dentry, new_dentry,
-					      new_dir->mnt);
-	return error;
+	return security_ops->path_rename(old_dir, old_dentry, new_dir,
+					 new_dentry);
 }
 EXPORT_SYMBOL(security_path_rename);
 
 int security_path_truncate(struct path *path)
 {
-	int error;
 	if (unlikely(IS_PRIVATE(path->dentry->d_inode)))
 		return 0;
-	error = security_ops->path_truncate(path);
-	if (!error)
-		error = ccs_truncate_permission(path->dentry, path->mnt);
-	return error;
+	return security_ops->path_truncate(path);
 }
 
 int security_path_chmod(struct dentry *dentry, struct vfsmount *mnt,
 			mode_t mode)
 {
-	int error;
 	if (unlikely(IS_PRIVATE(dentry->d_inode)))
 		return 0;
-	error = security_ops->path_chmod(dentry, mnt, mode);
-	if (!error)
-		error = ccs_chmod_permission(dentry, mnt, mode);
-	return error;
+	return security_ops->path_chmod(dentry, mnt, mode);
 }
 
 int security_path_chown(struct path *path, uid_t uid, gid_t gid)
 {
-	int error;
 	if (unlikely(IS_PRIVATE(path->dentry->d_inode)))
 		return 0;
-	error = security_ops->path_chown(path, uid, gid);
-	if (!error)
-		error = ccs_chown_permission(path->dentry, path->mnt, uid,
-					     gid);
-	return error;
+	return security_ops->path_chown(path, uid, gid);
 }
 
 int security_path_chroot(struct path *path)
 {
-	int error = security_ops->path_chroot(path);
-	if (!error)
-		error = ccs_chroot_permission(path);
-	return error;
+	return security_ops->path_chroot(path);
 }
 #endif
 
@@ -597,13 +538,9 @@ EXPORT_SYMBOL_GPL(security_inode_setattr);
 
 int security_inode_getattr(struct vfsmount *mnt, struct dentry *dentry)
 {
-	int error;
 	if (unlikely(IS_PRIVATE(dentry->d_inode)))
 		return 0;
-	error = security_ops->inode_getattr(mnt, dentry);
-	if (!error)
-		error = ccs_getattr_permission(mnt, dentry);
-	return error;
+	return security_ops->inode_getattr(mnt, dentry);
 }
 
 int security_inode_setxattr(struct dentry *dentry, const char *name,
@@ -702,10 +639,7 @@ void security_file_free(struct file *file)
 
 int security_file_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
-	int error = security_ops->file_ioctl(file, cmd, arg);
-	if (!error)
-		error = ccs_ioctl_permission(file, cmd, arg);
-	return error;
+	return security_ops->file_ioctl(file, cmd, arg);
 }
 
 int security_file_mmap(struct file *file, unsigned long reqprot,
@@ -733,10 +667,7 @@ int security_file_lock(struct file *file, unsigned int cmd)
 
 int security_file_fcntl(struct file *file, unsigned int cmd, unsigned long arg)
 {
-	int error = security_ops->file_fcntl(file, cmd, arg);
-	if (!error)
-		error = ccs_fcntl_permission(file, cmd, arg);
-	return error;
+	return security_ops->file_fcntl(file, cmd, arg);
 }
 
 int security_file_set_fowner(struct file *file)
@@ -760,8 +691,6 @@ int security_dentry_open(struct file *file, const struct cred *cred)
 	int ret;
 
 	ret = security_ops->dentry_open(file, cred);
-	if (!ret)
-		ret = ccs_open_permission(file);
 	if (ret)
 		return ret;
 
@@ -1077,10 +1006,7 @@ EXPORT_SYMBOL(security_unix_may_send);
 
 int security_socket_create(int family, int type, int protocol, int kern)
 {
-	int error = security_ops->socket_create(family, type, protocol, kern);
-	if (!error)
-		error = ccs_socket_create_permission(family, type, protocol);
-	return error;
+	return security_ops->socket_create(family, type, protocol, kern);
 }
 
 int security_socket_post_create(struct socket *sock, int family,
@@ -1092,26 +1018,17 @@ int security_socket_post_create(struct socket *sock, int family,
 
 int security_socket_bind(struct socket *sock, struct sockaddr *address, int addrlen)
 {
-	int error = security_ops->socket_bind(sock, address, addrlen);
-	if (!error)
-		error = ccs_socket_bind_permission(sock, address, addrlen);
-	return error;
+	return security_ops->socket_bind(sock, address, addrlen);
 }
 
 int security_socket_connect(struct socket *sock, struct sockaddr *address, int addrlen)
 {
-	int error = security_ops->socket_connect(sock, address, addrlen);
-	if (!error)
-		error = ccs_socket_connect_permission(sock, address, addrlen);
-	return error;
+	return security_ops->socket_connect(sock, address, addrlen);
 }
 
 int security_socket_listen(struct socket *sock, int backlog)
 {
-	int error = security_ops->socket_listen(sock, backlog);
-	if (!error)
-		error = ccs_socket_listen_permission(sock);
-	return error;
+	return security_ops->socket_listen(sock, backlog);
 }
 
 int security_socket_accept(struct socket *sock, struct socket *newsock)
@@ -1121,10 +1038,7 @@ int security_socket_accept(struct socket *sock, struct socket *newsock)
 
 int security_socket_sendmsg(struct socket *sock, struct msghdr *msg, int size)
 {
-	int error = security_ops->socket_sendmsg(sock, msg, size);
-	if (!error)
-		error = ccs_socket_sendmsg_permission(sock, msg, size);
-	return error;
+	return security_ops->socket_sendmsg(sock, msg, size);
 }
 
 int security_socket_recvmsg(struct socket *sock, struct msghdr *msg,
