@@ -4,13 +4,6 @@
 
 menu "File systems"
 
-config DEBUG_READ_WRITE_FILE
-	bool "debug file path in syscall read/write/readv/writev/preadv/pwritev"
-	help
-	  This option enables debuging message on file path when userspace call
-	  read/write/readv/writev/preadv/pwritev. It will produce a lot of logs.
-	  Enable it if you know what you are doing, or set it 'n'.
-
 if BLOCK
 
 source "fs/ext2/Kconfig"

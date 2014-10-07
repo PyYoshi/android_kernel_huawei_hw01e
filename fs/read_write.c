@@ -399,35 +399,6 @@ static inline void file_pos_write(struct file *file, loff_t pos)
 	file->f_pos = pos;
 }
 
-#ifdef CONFIG_DEBUG_READ_WRITE_FILE
-static int print_file_path(struct file *file, char *opt)
-{
-		char *tmp;
-		char *pathname;
-		struct path *path;
-
-		path = &file->f_path;
-		path_get(&file->f_path);
-
-		tmp = (char *)__get_free_page(GFP_TEMPORARY);
-		if (!tmp)
-			return -ENOMEM;
-
-		pathname = d_path(path, tmp, PAGE_SIZE);
-		path_put(path);
-
-		if (IS_ERR(pathname)) {
-			free_page((unsigned long)tmp);
-			return PTR_ERR(pathname);
-		}
-
-		printk("file r/w: %s \"%s\"\n", opt, pathname);
-
-		free_page((unsigned long)tmp);
-		return 0;
-}
-#endif
-
 SYSCALL_DEFINE3(read, unsigned int, fd, char __user *, buf, size_t, count)
 {
 	struct file *file;
@@ -440,9 +411,6 @@ SYSCALL_DEFINE3(read, unsigned int, fd, char __user *, buf, size_t, count)
 		ret = vfs_read(file, buf, count, &pos);
 		file_pos_write(file, pos);
 		fput_light(file, fput_needed);
-#ifdef CONFIG_DEBUG_READ_WRITE_FILE
-		print_file_path(file, "read");
-#endif
 	}
 
 	return ret;
@@ -461,9 +429,6 @@ SYSCALL_DEFINE3(write, unsigned int, fd, const char __user *, buf,
 		ret = vfs_write(file, buf, count, &pos);
 		file_pos_write(file, pos);
 		fput_light(file, fput_needed);
-#ifdef CONFIG_DEBUG_READ_WRITE_FILE
-		print_file_path(file, "write");
-#endif
 	}
 
 	return ret;
@@ -773,9 +738,6 @@ SYSCALL_DEFINE3(readv, unsigned long, fd, const struct iovec __user *, vec,
 		ret = vfs_readv(file, vec, vlen, &pos);
 		file_pos_write(file, pos);
 		fput_light(file, fput_needed);
-#ifdef CONFIG_DEBUG_READ_WRITE_FILE
-		print_file_path(file, "readv");
-#endif
 	}
 
 	if (ret > 0)
@@ -797,9 +759,6 @@ SYSCALL_DEFINE3(writev, unsigned long, fd, const struct iovec __user *, vec,
 		ret = vfs_writev(file, vec, vlen, &pos);
 		file_pos_write(file, pos);
 		fput_light(file, fput_needed);
-#ifdef CONFIG_DEBUG_READ_WRITE_FILE
-		print_file_path(file, "writev");
-#endif
 	}
 
 	if (ret > 0)
@@ -831,9 +790,6 @@ SYSCALL_DEFINE5(preadv, unsigned long, fd, const struct iovec __user *, vec,
 		if (file->f_mode & FMODE_PREAD)
 			ret = vfs_readv(file, vec, vlen, &pos);
 		fput_light(file, fput_needed);
-#ifdef CONFIG_DEBUG_READ_WRITE_FILE
-		print_file_path(file, "prewadv");
-#endif
 	}
 
 	if (ret > 0)
@@ -859,9 +815,6 @@ SYSCALL_DEFINE5(pwritev, unsigned long, fd, const struct iovec __user *, vec,
 		if (file->f_mode & FMODE_PWRITE)
 			ret = vfs_writev(file, vec, vlen, &pos);
 		fput_light(file, fput_needed);
-#ifdef CONFIG_DEBUG_READ_WRITE_FILE
-		print_file_path(file, "pwritev");
-#endif
 	}
 
 	if (ret > 0)
