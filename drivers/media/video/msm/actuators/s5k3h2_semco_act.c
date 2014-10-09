@@ -351,7 +351,8 @@ static int s5k3h2_semco_actuator_set_hwparam(void *data, u64 val)
 
 static int s5k3h2_semco_actuator_get_hwparam(void *data, u64 *val)
 {
-	*val = s5k3h2_semco_hw_params[1];
+	//*val = s5k3h2_semco_hw_params[1];
+	*val = s5k3h2_semco_hw_params[(*val & 0x1FF)>>8];
 	return 0;
 }
 

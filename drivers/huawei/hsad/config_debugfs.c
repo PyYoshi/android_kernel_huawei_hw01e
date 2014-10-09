@@ -329,7 +329,7 @@ void convert_gpio_config_to_string(struct gpiomux_setting* cfg,struct gpio_confi
 		case 13: {config_str->func = "FUN_D";break;}
 		case 14: {config_str->func = "FUN_E";break;}
 		case 15: {config_str->func = "FUN_F";break;}
-		case NOSET: {config_str->func = "noset";break;}
+		//case NOSET: {config_str->func = "noset";break;}
 		default:config_str->func = "error";
 	}
 
@@ -343,7 +343,7 @@ void convert_gpio_config_to_string(struct gpiomux_setting* cfg,struct gpio_confi
 		case 5:{config_str->drv = "12ma";break;}
 		case 6:{config_str->drv = "14ma";break;}
 		case 7:{config_str->drv = "16ma";break;}
-		case NOSET:{config_str->drv = "noset";break;}
+		//case NOSET:{config_str->drv = "noset";break;}
 		default:config_str->drv = "error";
 	}
 
@@ -353,7 +353,7 @@ void convert_gpio_config_to_string(struct gpiomux_setting* cfg,struct gpio_confi
 		case 1:{config_str->pull = "pulldown";break;}
 		case 2:{config_str->pull = "keeper";break;}
 		case 3:{config_str->pull = "pullup";break;}
-		case NOSET:{config_str->pull = "noset";break;}
+		//case NOSET:{config_str->pull = "noset";break;}
 		default:config_str->pull = "error";
 	}
 
@@ -362,7 +362,7 @@ void convert_gpio_config_to_string(struct gpiomux_setting* cfg,struct gpio_confi
 		case 0:{config_str->dir = "in";break;}
 		case 1:{config_str->dir = "out H";break;}
 		case 2:{config_str->dir = "out L";break;}
-		case NOSET:{config_str->dir = "noset";break;}
+		//case NOSET:{config_str->dir = "noset";break;}
 		default:config_str->dir = "error";
 	}
 }
@@ -379,7 +379,7 @@ void convert_pm_gpio_config_to_string(struct pm_gpio param , struct pm_gpio_str 
 		case 5: {cfg->function = "dtest2";break;}
 		case 6: {cfg->function = "dtest3";break;}
 		case 7: {cfg->function = "dtest4";break;}
-		case NOSET: {cfg->function = "noset";break;}
+		//case NOSET: {cfg->function = "noset";break;}
 		default:cfg->function = "error";
 	}
 
@@ -389,7 +389,7 @@ void convert_pm_gpio_config_to_string(struct pm_gpio param , struct pm_gpio_str 
 		case 1:{cfg->out_strength = "high";break;}
 		case 2:{cfg->out_strength = "med";break;}
 		case 3:{cfg->out_strength = "low";break;}
-		case NOSET:{cfg->out_strength = "noset";break;}
+		//case NOSET:{cfg->out_strength = "noset";break;}
 		default:cfg->out_strength = "error";
 	}
 
@@ -401,7 +401,7 @@ void convert_pm_gpio_config_to_string(struct pm_gpio param , struct pm_gpio_str 
 		case 3:{cfg->pull = "pu_1.5_30";break;}
 		case 4:{cfg->pull = "pulldown";break;}
 		case 5:{cfg->pull = "nopull";break;}
-		case NOSET:{cfg->pull = "noset";break;}
+		//case NOSET:{cfg->pull = "noset";break;}
 		default:cfg->pull = "error";
 	}
 
@@ -414,7 +414,7 @@ void convert_pm_gpio_config_to_string(struct pm_gpio param , struct pm_gpio_str 
 		case 4:{cfg->vin_sel = "L4";break;}
 		case 5:{cfg->vin_sel = "L3";break;}
 		case 6:{cfg->vin_sel = "L17";break;}
-		case NOSET:{cfg->vin_sel = "noset";break;}
+		//case NOSET:{cfg->vin_sel = "noset";break;}
 		default:cfg->vin_sel = "error";
 	}
 
@@ -423,7 +423,7 @@ void convert_pm_gpio_config_to_string(struct pm_gpio param , struct pm_gpio_str 
 		case 1:{cfg->direction = "out";break;}
 		case 2:{cfg->direction = "in";break;}
 		case 3:{cfg->direction = "both";break;}
-		case NOSET:{cfg->direction = "noset";break;}
+		//case NOSET:{cfg->direction = "noset";break;}
 		default:cfg->direction = "error";
 	}
 
@@ -431,7 +431,7 @@ void convert_pm_gpio_config_to_string(struct pm_gpio param , struct pm_gpio_str 
 	{
 		case 0: {cfg->output_buffer = "cmos"; break;}
 		case 1: {cfg->output_buffer = "open drain";break;}
-		case NOSET: {cfg->output_buffer = "noset";break;}
+		//case NOSET: {cfg->output_buffer = "noset";break;}
 		default:cfg->output_buffer = "error";
 	}
 
@@ -439,7 +439,7 @@ void convert_pm_gpio_config_to_string(struct pm_gpio param , struct pm_gpio_str 
 	{
 		case 0: {cfg->output_value = "low"; break;}
 		case 1: {cfg->output_value = "high";break;}
-		case NOSET: {cfg->output_value = "noset";break;}
+		//case NOSET: {cfg->output_value = "noset";break;}
 		default:cfg->output_value = "error";
 	}
 
@@ -447,7 +447,7 @@ void convert_pm_gpio_config_to_string(struct pm_gpio param , struct pm_gpio_str 
 	{
 		case 0:{cfg->inv_int_pol = "disable";break;}
 		case 1:{cfg->inv_int_pol = "enable";break;}
-		case NOSET:{cfg->inv_int_pol = "noset";break;}
+		//case NOSET:{cfg->inv_int_pol = "noset";break;}
 		default:cfg->inv_int_pol = "error";
 	}
 
@@ -455,7 +455,7 @@ void convert_pm_gpio_config_to_string(struct pm_gpio param , struct pm_gpio_str 
 	{
 		case 0:{cfg->disable_pin = "enable";break;}
 		case 1:{cfg->disable_pin = "disable";break;}
-		case NOSET:{cfg->disable_pin = "noset";break;}
+		//case NOSET:{cfg->disable_pin = "noset";break;}
 		default:cfg->disable_pin = "error";
 	}
 }

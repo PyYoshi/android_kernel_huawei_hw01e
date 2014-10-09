@@ -118,7 +118,7 @@ static struct pm8xxx_gpio_init hw_pm8921_gpios[PM8921_GPIO_NUM];
 static int hw_pm8921_gpio_init(void)
 {
 	int i;
-	int rc;
+	int rc = 0;
 	int config_index = 0;
 	struct pm_gpio_cfg_t* pPMGpioCfg = get_pm_gpio_config_table();	
 
